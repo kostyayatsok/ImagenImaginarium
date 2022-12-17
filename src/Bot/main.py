@@ -6,8 +6,8 @@ import tracemalloc
 from src.image_generation.stable_diffusion import StableDiffusion
 
 
-from config import TOKEN
-from Geter import get_media
+from src.Bot.config import TOKEN
+from src.Bot.Geter import get_media
 
 image_generation = StableDiffusion()
 tracemalloc.start()
