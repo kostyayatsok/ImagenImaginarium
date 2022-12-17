@@ -1,16 +1,17 @@
+
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
 import pymorphy2
 import tracemalloc
+from src.image_generation.stable_diffusion import StableDiffusion
 
-tracemalloc.start()
-
-import re
-morph = pymorphy2.MorphAnalyzer()
 
 from config import TOKEN
 from Geter import get_media
+
+image_generation = StableDiffusion()
+tracemalloc.start()
+morph = pymorphy2.MorphAnalyzer()
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
@@ -27,7 +28,8 @@ async def GenPic(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    data = get_media()
+    text = msg
+    data = get_media(text)
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
     await msg.answer(
@@ -71,6 +73,3 @@ async def Main(msg: types.Message):
         await GetAns(msg)
     if msg.text == "Хватит":
         await Finish(msg)
-
-if __name__ == '__main__':
-    executor.start_polling(dp)
