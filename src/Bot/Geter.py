@@ -1,13 +1,10 @@
 from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-import pymorphy2
 from random import randint
-from src.image_generation.stable_diffusion import StableDiffusion
 from src.text_editing.bert_text_editor import edit_text_bert
-from src.text_editing.bert_text_editor import normalize
 from src.text_editing.edit_text_latent import edit_text_latent
 from src.Bot.main import image_generation
+
+
 def get_media(text):
     media = types.MediaGroup()
     emb_true = image_generation.text_embedding(text)
