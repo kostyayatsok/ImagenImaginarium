@@ -10,7 +10,9 @@ image_generation = StableDiffusion()
 def get_media(text):
     media = types.MediaGroup()
     emb_true = image_generation.text_embedding(text)
+    print("embedding getted")
     image_true = image_generation.generate_image(emb_true)
+    print("first picture generated")
     media.attach_photo(image_true)
     for i in range(2):
         new_text = edit_text_bert(text, 1)
