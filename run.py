@@ -5,6 +5,7 @@ from src.Bot.Geter import get_media
 from src.Bot.config import TOKEN
 from aiogram.utils import executor
 from aiogram.dispatcher import Dispatcher
+from src.text_generation.gpt2 import generate_promt
 
 tracemalloc.start()
 
@@ -25,7 +26,7 @@ async def GenPic(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    text = msg
+    text = generate_promt()
     data = get_media(text)
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
