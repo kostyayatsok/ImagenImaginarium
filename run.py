@@ -26,7 +26,7 @@ async def GenPic(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    text = generate_promt("surreal drawings for children")
+    text = generate_promt()
     print("Promt generated: " + text)
     data = get_media(text)
     print("Media generated")
