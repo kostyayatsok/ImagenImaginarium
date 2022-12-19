@@ -4,6 +4,10 @@ from src.image_generation.stable_diffusion import StableDiffusion
 from src.text_editing.bert_text_editor import edit_text_bert
 from src.text_editing.edit_text_latent import edit_text_latent
 from src.text_generation.gpt2 import generate_promt
+import sys
+module_path = os.path.abspath(os.getcwd() + '\\..\\..')
+if module_path not in sys.path:
+    sys.path.append(module_path)
 
 LABEL = 1
 PICTURE_NUMBER = 1
