@@ -27,7 +27,7 @@ async def GenPic(msg: types.Message):
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
     text = generate_promt()
-    print("Promt generated")
+    print("Promt generated: " + text)
     data = get_media(text)
     print("Media generated")
     answ = data[1]
