@@ -54,7 +54,6 @@ class StableDiffusion:
             generator=self.generator,
         )
         latents = latents.to(torch_device)
-        latents.shape
         latents = latents * self.scheduler.init_noise_sigma
 
         for t in tqdm(self.scheduler.timesteps):
@@ -79,5 +78,6 @@ class StableDiffusion:
         images = (image * 255).round().astype("uint8")
         pil_images = [Image.fromarray(image) for image in images]
         return pil_images[0]
+
 
 ImgGenerator = StableDiffusion()
