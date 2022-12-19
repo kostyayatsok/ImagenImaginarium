@@ -1,13 +1,21 @@
 from aiogram import Bot, types
 import tracemalloc
 from src.Bot.Geter import get_media
-from run import bot, dp
+#from run import bot, dp
+from src.Bot.config import TOKEN
+from aiogram.utils import executor
+from aiogram.dispatcher import Dispatcher
+from src.image_generation.stable_diffusion import StableDiffusion
 
 tracemalloc.start()
 
 fl = 0
 answ = -1
 gamers = {}
+
+image_generation = StableDiffusion()
+bot = Bot(token=TOKEN)
+dp = Dispatcher(bot)
 
 
 async def GenPic(msg: types.Message):
@@ -70,3 +78,7 @@ async def Main(msg: types.Message):
         await GetAns(msg)
     if msg.text == "Хватит":
         await Finish(msg)
+
+if __name__ == '__main__':
+    print("polling")
+    executor.start_polling(dp)
