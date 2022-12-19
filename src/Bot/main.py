@@ -1,14 +1,8 @@
 from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
 import tracemalloc
-from src.image_generation.stable_diffusion import StableDiffusion
-from src.Bot.config import TOKEN
 from src.Bot.Geter import get_media
 
 tracemalloc.start()
-
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
 
 fl = 0
 answ = -1

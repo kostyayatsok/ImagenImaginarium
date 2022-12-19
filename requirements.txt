@@ -2,3 +2,4 @@ numpy
 transformers
 aiogram
 diffusers
+accelerate
