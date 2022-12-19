@@ -1,6 +1,7 @@
 from aiogram import Bot, types
 import tracemalloc
 from src.Bot.Geter import get_media
+from run import bot, dp
 
 tracemalloc.start()
 
@@ -55,6 +56,7 @@ async def Start(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да!", "Хватит"]
     keyboard.add(*buttons)
+    print("Bot started")
     await msg.answer(
         "Привет. Я Imagen imaginarium bot. Со мной ты можешь играть в imaginarium, где картинки будут сгенерированы нейросетью. Начинаем?",
         reply_markup=keyboard)
