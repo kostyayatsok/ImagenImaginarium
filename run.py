@@ -30,7 +30,7 @@ async def GenPic(msg: types.Message):
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
     await msg.answer(
-        'Картинка была сгенерирована по тексту: "' + data[2] + '". Какой ответ?',
+        'Картинка была сгенерирована по тексту: "' + text + '". Какой ответ?',
         reply_markup=keyboard)
 
 
