@@ -31,6 +31,6 @@ def get_media(text):
     pos_who_must_replace = randint(0, 5)
     media[0], media[pos_who_must_replace] = media[pos_who_must_replace], media[0]
     for i in range(0, 5):
-        media_r.attach_photo(media[i])
+        media_r.attach_photo(types.InputFile(str(i) + ".png"))
     print("replaced")
     return [media_r, pos_who_must_replace + 1, text]
