@@ -32,17 +32,17 @@ class StableDiffusion:
         self.unet = self.unet.to(torch_device)
 
     async def text_embedding(self, prompt):
-        text_input = await self.tokenizer(prompt, padding="max_length", max_length=self.tokenizer.model_max_length,
+        text_input = self.tokenizer(prompt, padding="max_length", max_length=self.tokenizer.model_max_length,
                                     truncation=True, return_tensors="pt")
         with torch.no_grad():
-            text_embeddings = await self.text_encoder(text_input.input_ids.to(torch_device))[0]
+            text_embeddings = self.text_encoder(text_input.input_ids.to(torch_device))[0]
 
         max_length = text_input.input_ids.shape[-1]
-        uncond_input = await self.tokenizer(
+        uncond_input = self.tokenizer(
             [""] * self.batch_size, padding="max_length", max_length=max_length, return_tensors="pt"
         )
         with torch.no_grad():
-            uncond_embeddings = await self.text_encoder(uncond_input.input_ids.to(torch_device))[0]
+            uncond_embeddings = self.text_encoder(uncond_input.input_ids.to(torch_device))[0]
         text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
         return text_embeddings
 
@@ -52,26 +52,26 @@ class StableDiffusion:
             (self.batch_size, self.unet.in_channels, self.height // 8, self.width // 8),
             generator=self.generator,
         )
-        latents = await latents.to(torch_device)
-        latents = await latents * self.scheduler.init_noise_sigma
+        latents = latents.to(torch_device)
+        latents = latents * self.scheduler.init_noise_sigma
 
         for t in tqdm(self.scheduler.timesteps):
             # expand the latents if we are doing classifier-free guidance to avoid doing two forward passes.
             latent_model_input = torch.cat([latents] * 2)
-            latent_model_input = await self.scheduler.scale_model_input(latent_model_input, t)
+            latent_model_input = self.scheduler.scale_model_input(latent_model_input, t)
             # predict the noise residual
             with torch.no_grad():
-                noise_pred = await self.unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
+                noise_pred = self.unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
             # perform guidance
             noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
             noise_pred = noise_pred_uncond + self.guidance_scale * (noise_pred_text - noise_pred_uncond)
             # compute the previous noisy sample x_t -> x_t-1
-            latents = await self.scheduler.step(noise_pred, t, latents).prev_sample
+            latents = self.scheduler.step(noise_pred, t, latents).prev_sample
 
         # scale and decode the image latents with vae
         latents = 1 / 0.18215 * latents
         with torch.no_grad():
-            image = await self.vae.decode(latents).sample
+            image = self.vae.decode(latents).sample
         image = (image / 2 + 0.5).clamp(0, 1)
         image = image.detach().cpu().permute(0, 2, 3, 1).numpy()
         images = (image * 255).round().astype("uint8")
