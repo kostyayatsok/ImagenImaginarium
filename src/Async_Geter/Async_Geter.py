@@ -36,7 +36,7 @@ def save():
     TABLE.to_csv(DATABASE_PATH, index=False)
 
 
-def add_media(text):
+def add_media(text=""):
     global LABEL
     global IMAGES_PATH
     text = generate_promt(text)
@@ -67,3 +67,6 @@ def add_media(text):
     LABEL += 1
     return
 
+
+if __name__ == "__main__":
+    add_media()
