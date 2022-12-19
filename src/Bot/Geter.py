@@ -14,17 +14,20 @@ def get_media(text):
     print("embedding getted")
     image_true = image_generation.generate_image(emb_true)
     print("first picture generated")
-    media.append(image_true)
+    image_true.save("0.png")
+    media.append("0.png")
     for i in range(2):
         new_text = edit_text_bert(text, 1)
         emb = image_generation.text_embedding(new_text)
         image = image_generation.generate_image(emb)
-        media.append(image)
+        image.save(str(i + 1) + ".png")
+        media.append(str(i + 1) + ".png")
     for i in range(2):
         emb = image_generation.text_embedding(text)
         emb = edit_text_latent(emb, 7)
         image = image_generation.generate_image(emb)
-        media.append(image)
+        image.save(str(i + 3) + ".png")
+        media.append(str(i + 3) + ".png")
     pos_who_must_replace = randint(0, 5)
     media[0], media[pos_who_must_replace] = media[pos_who_must_replace], media[0]
     for i in range(0, 5):
