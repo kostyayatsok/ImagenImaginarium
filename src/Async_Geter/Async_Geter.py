@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from src.image_generation.stable_diffusion import StableDiffusion
 from src.text_editing.bert_text_editor import edit_text_bert
 from src.text_editing.edit_text_latent import edit_text_latent
@@ -6,12 +7,12 @@ from src.text_generation.gpt2 import generate_promt
 
 LABEL = 1
 PICTURE_NUMBER = 1
-IMAGES_PATH = "C:\\Project\\Images"
-DATABASE_PATH = "C:\\Project\\Database.csv"
+IMAGES_PATH = "Images"
+DATABASE_PATH = "Database.csv"
 TABLE = pd.read_csv(DATABASE_PATH)
 
 image_generation = StableDiffusion()
-
+os.makedirs(IMAGES_PATH, exist_ok=True)
 
 def get_picture_name():
     global PICTURE_NUMBER
