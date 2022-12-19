@@ -26,9 +26,9 @@ async def GenPic(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    text = generate_promt("surreal drawings")
+    text = await generate_promt("surreal drawings")
     print("Promt generated: " + text)
-    data = get_media(text)
+    data = await get_media(text)
     print("Media generated")
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
@@ -48,7 +48,7 @@ async def GetAns(msg: types.Message):
             reply_markup=keyboard)
     else:
         await msg.reply(
-            "Очень жаль. Неправильно(. Играем еще?",
+            "Очень жаль. Правильный ответ" + str(answ) + "\nИграем еще?",
             reply_markup=keyboard)
     answ = -1
     fl = 1
