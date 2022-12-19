@@ -2,9 +2,8 @@ import torch
 
 torch_device = "cuda" if torch.cuda.is_available() else "cpu"
 from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import AutoencoderKL, UNet2DConditionModel, PNDMScheduler
+from diffusers import AutoencoderKL, UNet2DConditionModel
 from tqdm.auto import tqdm
-from torch import autocast
 from PIL import Image
 from diffusers import LMSDiscreteScheduler
 
@@ -47,13 +46,14 @@ class StableDiffusion:
         text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
         return text_embeddings
 
-    def generate_image(self, prompt):
-        text_embeddings = self.text_embedding(prompt)
+    def generate_image(self, text_embeddings):
+        # text_embeddings = self.text_embedding(prompt)
         latents = torch.randn(
             (self.batch_size, self.unet.in_channels, self.height // 8, self.width // 8),
             generator=self.generator,
         )
         latents = latents.to(torch_device)
+        latents.shape
         latents = latents * self.scheduler.init_noise_sigma
 
         for t in tqdm(self.scheduler.timesteps):
@@ -78,3 +78,5 @@ class StableDiffusion:
         images = (image * 255).round().astype("uint8")
         pil_images = [Image.fromarray(image) for image in images]
         return pil_images[0]
+
+ImgGenerator = StableDiffusion()

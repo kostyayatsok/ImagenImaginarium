@@ -5,7 +5,7 @@ from src.Bot.Geter import get_media
 from src.Bot.config import TOKEN
 from aiogram.utils import executor
 from aiogram.dispatcher import Dispatcher
-from src.image_generation.stable_diffusion import StableDiffusion
+from src.text_generation.gpt2 import generate_promt
 
 tracemalloc.start()
 
@@ -13,7 +13,6 @@ fl = 0
 answ = -1
 gamers = {}
 
-image_generation = StableDiffusion()
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
@@ -27,12 +26,14 @@ async def GenPic(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    text = msg
+    text = generate_promt("surreal drawings for children")
+    print("Promt generated: " + text)
     data = get_media(text)
+    print("Media generated")
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
     await msg.answer(
-        'Картинка была сгенерирована по тексту: "' + data[2] + '". Какой ответ?',
+        'Картинка была сгенерирована по тексту: "' + text + '". Какой ответ?',
         reply_markup=keyboard)
 
 
@@ -81,4 +82,4 @@ async def Main(msg: types.Message):
 
 if __name__ == '__main__':
     print("polling")
-    executor.start_polling(dp)
+    executor.start_polling(dp, skip_updates=True)
