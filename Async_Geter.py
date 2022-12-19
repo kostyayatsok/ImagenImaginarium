@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-os.chdir(os.getcwd() + '\\..\\..')
 
 from src.image_generation.stable_diffusion import StableDiffusion
 from src.text_editing.bert_text_editor import edit_text_bert
