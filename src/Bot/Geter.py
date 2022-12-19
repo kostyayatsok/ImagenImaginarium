@@ -30,4 +30,4 @@ def get_media(text):
     for i in range(0, 5):
         media_r.attach_photo(media[i])
     print("replaced")
-    return [media, pos_who_must_replace + 1, text]
+    return [media_r, pos_who_must_replace + 1, text]
