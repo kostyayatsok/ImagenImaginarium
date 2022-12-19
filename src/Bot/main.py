@@ -5,7 +5,6 @@ from src.image_generation.stable_diffusion import StableDiffusion
 from src.Bot.config import TOKEN
 from src.Bot.Geter import get_media
 
-image_generation = StableDiffusion()
 tracemalloc.start()
 
 bot = Bot(token=TOKEN)

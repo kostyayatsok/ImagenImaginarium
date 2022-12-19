@@ -2,9 +2,8 @@ import torch
 
 torch_device = "cuda" if torch.cuda.is_available() else "cpu"
 from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import AutoencoderKL, UNet2DConditionModel, PNDMScheduler
+from diffusers import AutoencoderKL, UNet2DConditionModel
 from tqdm.auto import tqdm
-from torch import autocast
 from PIL import Image
 from diffusers import LMSDiscreteScheduler
 
