@@ -5,7 +5,6 @@ from src.Bot.Geter import get_media
 from src.Bot.config import TOKEN
 from aiogram.utils import executor
 from aiogram.dispatcher import Dispatcher
-from src.image_generation.stable_diffusion import StableDiffusion
 
 tracemalloc.start()
 
@@ -13,7 +12,6 @@ fl = 0
 answ = -1
 gamers = {}
 
-image_generation = StableDiffusion()
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 

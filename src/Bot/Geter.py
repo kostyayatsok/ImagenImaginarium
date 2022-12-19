@@ -2,7 +2,9 @@ from aiogram import Bot, types
 from random import randint
 from src.text_editing.bert_text_editor import edit_text_bert
 from src.text_editing.edit_text_latent import edit_text_latent
-from run import image_generation
+from src.image_generation.stable_diffusion import StableDiffusion
+
+image_generation = StableDiffusion()
 
 
 def get_media(text):
