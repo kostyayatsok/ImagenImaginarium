@@ -43,24 +43,24 @@ def add_media(text=""):
     global LABEL
     global IMAGES_PATH
     text = generate_promt(text)
-    emb_true = StableDiffusion.text_embedding(text)
-    image_true = StableDiffusion.generate_image(emb_true)
+    emb_true = image_generation.text_embedding(text)
+    image_true = image_generation.generate_image(emb_true)
     picture_name = get_picture_name()
     img_path = IMAGES_PATH + '\\' + picture_name
     add_table_row(img_path, LABEL, text, "True")
     image_true.save(img_path)
     for _ in range(2):
         new_text = edit_text_bert(text, 1)
-        emb = StableDiffusion.text_embedding(new_text)
-        image = StableDiffusion.generate_image(emb)
+        emb = image_generation.text_embedding(new_text)
+        image = image_generation.generate_image(emb)
         picture_name = get_picture_name()
         img_path = IMAGES_PATH + '\\' + picture_name
         add_table_row(img_path, LABEL, new_text, "False")
         image.save(img_path)
     for _ in range(2):
-        emb = StableDiffusion.text_embedding(text)
+        emb = image_generation.text_embedding(text)
         emb = edit_text_latent(emb, 7)
-        image = StableDiffusion.generate_image(emb)
+        image = image_generation.generate_image(emb)
         picture_name = get_picture_name()
         img_path = IMAGES_PATH + '\\' + picture_name
         add_table_row(img_path, LABEL, "None", "False")
