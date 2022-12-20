@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import argparse
 
 from src.image_generation.stable_diffusion import StableDiffusion
 from src.text_editing.bert_text_editor import edit_text_bert
@@ -39,10 +40,10 @@ def save():
     TABLE.to_csv(DATABASE_PATH, index=False)
 
 
-def add_media(text=""):
+def add_media(num_masks, noise_length):
     global LABEL
     global IMAGES_PATH
-    text = generate_promt(text)
+    text = generate_promt()
     emb_true = image_generation.text_embedding(text)
     image_true = image_generation.generate_image(emb_true)
     picture_name = get_picture_name()
@@ -50,7 +51,7 @@ def add_media(text=""):
     add_table_row(img_path, LABEL, text, "True")
     image_true.save(img_path)
     for _ in range(2):
-        new_text = edit_text_bert(text, 100)
+        new_text = edit_text_bert(text, num_masks)
         emb = image_generation.text_embedding(new_text)
         image = image_generation.generate_image(emb)
         picture_name = get_picture_name()
@@ -59,7 +60,7 @@ def add_media(text=""):
         image.save(img_path)
     for _ in range(2):
         emb = image_generation.text_embedding(text)
-        emb = edit_text_latent(emb, 7)
+        emb = edit_text_latent(emb, noise_length)
         image = image_generation.generate_image(emb)
         picture_name = get_picture_name()
         img_path = IMAGES_PATH + '/' + picture_name
@@ -72,4 +73,10 @@ def add_media(text=""):
 
 
 if __name__ == "__main__":
-    add_media()
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--num_masks', type=int,
+                        help='how many tokens masked in BERT')
+    parser.add_argument('--noise_length', type=int,
+                        help='noise_length')
+    args = parser.parse_args()
+    add_media(args.num_masks, args.noise_length)
