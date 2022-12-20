@@ -90,10 +90,18 @@ if __name__ == "__main__":
                         help='how many images generate with masking strategy')
     parser.add_argument('--n_noise_images', type=int, default=2,
                         help='how many images generate with noise strategy')
+    parser.add_argument('--n_iterations', type=int, default=1000,
+                        help='how many sample to generate to do. -1 for endless generation.')
+
     args = parser.parse_args()
 
     if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]
         LABEL = d["label"] + 1
     
-    add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
+    while args.n_iterations == -1:
+        add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
+
+    for i in range(args.n_iterations):
+        add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
+        
