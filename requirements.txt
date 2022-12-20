@@ -3,3 +3,7 @@ transformers
 aiogram
 diffusers
 accelerate
+diffusers==0.10.0
+transformers scipy ftfy accelerate
+transformers[sentencepiece]
+transformers[sentencepiece] datasets
