@@ -2378,12 +2378,12 @@ def gpt2_g():
     s = adjectives[ind] + ' '
     ind = randint(0, len(nouns))
     s += nouns[ind] + ' '
-    ind = randint(0, len(verbs))
-    s += verbs[ind] + ' '
+    #ind = randint(0, len(verbs))
+    #s += verbs[ind] + ' '
     dct = generator_gpt(s, max_length=20, num_return_sequences=1)
     return dct[0]['generated_text']
 
 def generate_promt():
     text = gpt2_g()
-    dct = generator(text, max_length=50, num_return_sequences=1)
+    dct = generator(text, max_length=44, num_return_sequences=1)
     return dct[0]['generated_text']
