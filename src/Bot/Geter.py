@@ -1,5 +1,5 @@
 from aiogram import types
-from gen_photo import *
+from src.Bot.gen_photo import *
 import random
 
 
