@@ -3,5 +3,9 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 import pymorphy2
 
+t = 0
 def get_photo():
-    return types.InputFile('C:/Users/Dan/Pictures/img.png')
+    global t
+    s = "C:/Users/Dan/Pictures/img/" + str(t) + ".jpg"
+    t = (t + 1) % 20
+    return s
