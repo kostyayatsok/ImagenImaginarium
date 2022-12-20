@@ -5,6 +5,7 @@ from src.text_editing.edit_text_latent import edit_text_latent
 from src.image_generation.stable_diffusion import StableDiffusion
 
 image_generation = StableDiffusion()
+
 def get_media(text):
     media = list()
     media_r = types.MediaGroup()
