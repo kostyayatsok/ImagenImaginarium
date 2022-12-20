@@ -7,7 +7,7 @@ from src.image_generation.stable_diffusion import StableDiffusion
 image_generation = StableDiffusion()
 
 
-async def get_media(text):
+def get_media(text):
     media = list()
     media_r = types.MediaGroup()
     emb_true = image_generation.text_embedding(text)

@@ -31,7 +31,7 @@ class StableDiffusion:
         self.text_encoder = self.text_encoder.to(torch_device)
         self.unet = self.unet.to(torch_device)
 
-    async def text_embedding(self, prompt):
+    def text_embedding(self, prompt):
         text_input = self.tokenizer(prompt, padding="max_length", max_length=self.tokenizer.model_max_length,
                                     truncation=True, return_tensors="pt")
         with torch.no_grad():
@@ -46,7 +46,7 @@ class StableDiffusion:
         text_embeddings = torch.cat([uncond_embeddings, text_embeddings])
         return text_embeddings
 
-    async def generate_image(self, text_embeddings):
+    def generate_image(self, text_embeddings):
         # text_embeddings = self.text_embedding(prompt)
         latents = torch.randn(
             (self.batch_size, self.unet.in_channels, self.height // 8, self.width // 8),
@@ -77,5 +77,3 @@ class StableDiffusion:
         images = (image * 255).round().astype("uint8")
         pil_images = [Image.fromarray(image) for image in images]
         return pil_images[0]
-
-ImgGenerator = StableDiffusion()
