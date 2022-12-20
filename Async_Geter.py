@@ -77,9 +77,9 @@ def add_media(num_masks, noise_length):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--num_masks', type=int,
+    parser.add_argument('--num_masks', type=int, default = 3,
                         help='how many tokens masked in BERT')
-    parser.add_argument('--noise_length', type=int,
+    parser.add_argument('--noise_length', type=int, default = 5,
                         help='noise_length')
     args = parser.parse_args()
     add_media(args.num_masks, args.noise_length)
