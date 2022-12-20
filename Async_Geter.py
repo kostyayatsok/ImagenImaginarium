@@ -11,20 +11,20 @@ LABEL = 1
 PICTURE_NUMBER = 1
 IMAGES_PATH = "Images"
 DATABASE_PATH = "Database.csv"
-TABLE = pd.read_csv(DATABASE_PATH)
+MAX_DATABASE_SIZE = 1000
+
+if os.path.exists(DATABASE_PATH):
+    TABLE = pd.read_csv(DATABASE_PATH)
+else:
+    TABLE = pd.DataFrame()
 
 image_generation = StableDiffusion()
 os.makedirs(IMAGES_PATH, exist_ok=True)
 
 
 
-def get_picture_name():
-    global PICTURE_NUMBER
-    number = str(PICTURE_NUMBER)
-    PICTURE_NUMBER += 1
-    while len(number) < 9:
-        number = '0' + number
-    return 'IMG' + number + ".png"
+def get_picture_name(pic):
+    return f"{IMAGES_PATH}/{LABEL:05d}_{pic:02d}.png"
 
 
 def add_table_row(img_path, label, text, main_picture):
@@ -41,47 +41,48 @@ def save():
     TABLE.to_csv(DATABASE_PATH, index=False)
 
 
-def add_media(num_masks, noise_length):
-    global LABEL
-    global IMAGES_PATH
+def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
     text = generate_promt()
     emb_true = image_generation.text_embedding(text)
     image_true = image_generation.generate_image(emb_true)
-    picture_name = get_picture_name()
-    img_path = IMAGES_PATH + '/' + picture_name
+    img_path = get_picture_name(0)
     add_table_row(img_path, LABEL, text, "True")
     image_true.save(img_path)
-    for _ in range(2):
+
+    for i in range(n_bert_images):
         new_text = edit_text_bert(text, num_masks)
         emb = image_generation.text_embedding(new_text)
         image = image_generation.generate_image(emb)
-        picture_name = get_picture_name()
-        img_path = IMAGES_PATH + '/' + picture_name
-        add_table_row(img_path, LABEL, new_text, "False")
+        img_path = get_picture_name(i+1)
+        add_table_row(img_path, LABEL, new_text, False)
         image.save(img_path)
-    for _ in range(2):
-        emb = image_generation.text_embedding(text)
-        emb = edit_text_latent(emb, noise_length)
+
+    for i in range(n_noise_images):
+        emb = edit_text_latent(emb_true, noise_length)
         image = image_generation.generate_image(emb)
-        picture_name = get_picture_name()
-        img_path = IMAGES_PATH + '/' + picture_name
-        add_table_row(img_path, LABEL, "None", "False")
+        img_path = get_picture_name(i+1+n_bert_images)
+        add_table_row(img_path, LABEL, None, False)
         image.save(img_path)
-    if LABEL % 1 == 0:
+    
+    if LABEL % 10 == 0:
         save()
-    LABEL += 1
-    return
+    LABEL = (LABEL + 1) % MAX_DATABASE_SIZE
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--num_masks', type=int,
-                        help='how many tokens masked in BERT')
-    parser.add_argument('--noise_length', type=int,
+    parser.add_argument('--num_masks', type=int, default=5,
+                        help='how many tokens masked')
+    parser.add_argument('--noise_length', type=int, default=5,
                         help='noise_length')
+    parser.add_argument('--n_bert_images', type=int, default=2,
+                        help='how many images generate with masking strategy')
+    parser.add_argument('--n_noise_images', type=int, default=2,
+                        help='how many images generate with noise strategy')
     args = parser.parse_args()
-    if TABLE.shape != 0:
+
+    if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]
-        last_label = d["label"]
-        LABEL = int(last_label[3:12]) + 1
-    add_media(args.num_masks, args.noise_length)
+        LABEL = d["label"] + 1
+    
+    add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
