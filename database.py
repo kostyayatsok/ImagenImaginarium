@@ -29,6 +29,7 @@ def get_picture_name(pic):
 
 def add_table_row(img_path, label, text, main_picture):
     global TABLE
+
     TABLE = TABLE.append(pd.DataFrame({
         "img_path": [img_path],
         "label": [label],
@@ -42,6 +43,8 @@ def save():
 
 
 def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
+    global LABEL
+
     is_nsfw = True
     while is_nsfw:
         text = generate_promt()
