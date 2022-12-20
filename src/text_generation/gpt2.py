@@ -1,4 +1,4 @@
-from transformers import pipeline, set_seed
+from transformers import pipeline
 from random import randint
 
 generator = pipeline('text-generation', model='Gustavosta/MagicPrompt-Stable-Diffusion')
@@ -2377,12 +2377,15 @@ def gpt2_g():
     s = adjectives[ind] + ' '
     ind = randint(0, len(nouns))
     s += nouns[ind] + ' '
+    print("start" + s)
     #ind = randint(0, len(verbs))
     #s += verbs[ind] + ' '
     dct = generator_gpt(s, max_length=20, num_return_sequences=1)
+    print("gpt_2" + dct[0]['generated_text'])
     return dct[0]['generated_text']
 
 def generate_promt():
     text = gpt2_g()
     dct = generator(text, max_length=44, num_return_sequences=1)
+    print()
     return dct[0]['generated_text']
