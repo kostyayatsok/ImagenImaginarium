@@ -14,7 +14,7 @@ def edit_text_bert(text, num_masks):
     unmasker = pipeline('fill-mask', model='bert-base-uncased')
     words = text.split()
     for i in range(num_masks):
-        position = random.randint(0, len(words) - 2)
+        position = random.randint(0, len(words) - 1)
         words[position] = '[MASK]'
         masked_text = ' '.join(words)
         variants = unmasker(masked_text)
