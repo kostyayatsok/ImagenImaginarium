@@ -47,11 +47,12 @@ async def Main(msg: types.Message):
         return
     if msg.text == "Да" and Game.fl == 2:
         await msg.answer("Ну и жди", reply_markup=types.ReplyKeyboardRemove())
+        Game.fl = 0
     if msg.text == "Нет" and Game.fl == 2:
         for u in Game.List:
             await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
         Game.start()
-        fl = 0
+        Game.fl = 0
 
 
     Game.go()

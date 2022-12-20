@@ -14,7 +14,6 @@ class RealGamer:
         self.media_id = -1
         self.ans = -1
         self.name = my_name
-        self.fl = 1
         for i in range(6):
             self.MG.append(get_photo())
             self.MedGroup.attach_photo(types.InputFile(self.MG[i]))
