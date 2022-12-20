@@ -28,7 +28,7 @@ async def GenPic(msg: types.Message):
     keyboard.add(*buttons)
     text = generate_promt()
     print("Promt generated: " + text)
-    data = get_media("Surreal drawing" + text)
+    data = get_media("Surreal drawing " + text)
     print("Media generated")
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
