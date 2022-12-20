@@ -2380,7 +2380,7 @@ def gpt2_g():
     s += nouns[ind]
     ind = randint(0, len(verbs))
     s += verbs[ind]
-    dct = generator_gpt(s, mex_length=20, num_return_sequences=1)
+    dct = generator_gpt(s, max_length=20, num_return_sequences=1)
     return dct[0]['generated_text']
 
 def generate_promt():
