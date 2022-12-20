@@ -26,14 +26,14 @@ async def GenPic(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    text = generate_promt("surreal drawings")
+    text = generate_promt()
     print("Promt generated: " + text)
-    data = get_media(text)
+    data = get_media("Surreal drawing" + text)
     print("Media generated")
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
     await msg.answer(
-        'Картинка была сгенерирована по тексту: "' + text + '". Какой ответ?',
+        'Картинка была сгенерирована по тексту: "' + text.split(',')[0] + '". Какой ответ?',
         reply_markup=keyboard)
 
 
