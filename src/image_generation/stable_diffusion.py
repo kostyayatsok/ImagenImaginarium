@@ -1,11 +1,12 @@
 import torch
 
-torch_device = "cuda" if torch.cuda.is_available() else "cpu"
-from transformers import CLIPTextModel, CLIPTokenizer
-from diffusers import AutoencoderKL, UNet2DConditionModel
-from tqdm.auto import tqdm
+from diffusers import LMSDiscreteScheduler, AutoencoderKL, UNet2DConditionModel
+from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 from PIL import Image
-from diffusers import LMSDiscreteScheduler
+from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
+from tqdm.auto import tqdm
+
+torch_device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class StableDiffusion:
@@ -30,6 +31,8 @@ class StableDiffusion:
         self.vae = self.vae.to(torch_device)
         self.text_encoder = self.text_encoder.to(torch_device)
         self.unet = self.unet.to(torch_device)
+        self.safety_processor = CLIPFeatureExtractor.from_pretrained("openai/clip-vit-large-patch14")
+        self.safety_checker = StableDiffusionSafetyChecker.from_pretrained("CompVis/stable-diffusion-safety-checker")
 
     def text_embedding(self, prompt):
         text_input = self.tokenizer(prompt, padding="max_length", max_length=self.tokenizer.model_max_length,
@@ -53,7 +56,6 @@ class StableDiffusion:
             generator=self.generator,
         )
         latents = latents.to(torch_device)
-        latents.shape
         latents = latents * self.scheduler.init_noise_sigma
 
         for t in tqdm(self.scheduler.timesteps):
@@ -77,6 +79,9 @@ class StableDiffusion:
         image = image.detach().cpu().permute(0, 2, 3, 1).numpy()
         images = (image * 255).round().astype("uint8")
         pil_images = [Image.fromarray(image) for image in images]
-        return pil_images[0]
+        img = pil_images[0]
 
-ImgGenerator = StableDiffusion()
+        inputs = self.safety_processor(images=[img,], return_tensors="pt")
+        _, verdict = self.safety_checker(inputs["pixel_values"], [torch.zeros((2, 2)),])
+
+        return img, verdict[0]

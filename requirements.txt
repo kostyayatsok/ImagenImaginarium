@@ -1,9 +1,10 @@
-accelerate
-aiogram
-datasets
-diffusers
-ftfy
 numpy
+transformers>= 4.25.1
+aiogram
+diffusers==0.10.0
+accelerate
+pandas
+torch==1.12.0
+torchvision==0.13.0
 scipy
-transformers
 transformers[sentencepiece]
