@@ -1,11 +1,8 @@
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-import pymorphy2
+import pandas as pd
+
+
+base = pd.read_csv("Database.csv")
 
 t = 0
 def get_photo():
-    global t
-    s = "C:/Users/Dan/Pictures/img/" + str(t) + ".jpg"
-    t = (t + 1) % 20
-    return s
+    return base.sample(1).iloc[0].img_path
