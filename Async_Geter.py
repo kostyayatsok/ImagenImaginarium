@@ -50,7 +50,7 @@ def add_media(text=""):
     add_table_row(img_path, LABEL, text, "True")
     image_true.save(img_path)
     for _ in range(2):
-        new_text = edit_text_bert(text, 1)
+        new_text = edit_text_bert(text, 100)
         emb = image_generation.text_embedding(new_text)
         image = image_generation.generate_image(emb)
         picture_name = get_picture_name()
