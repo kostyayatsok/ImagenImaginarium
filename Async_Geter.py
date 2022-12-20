@@ -17,11 +17,12 @@ image_generation = StableDiffusion()
 os.makedirs(IMAGES_PATH, exist_ok=True)
 
 
+
 def get_picture_name():
     global PICTURE_NUMBER
     number = str(PICTURE_NUMBER)
     PICTURE_NUMBER += 1
-    while len(number) < 6:
+    while len(number) < 9:
         number = '0' + number
     return 'IMG' + number + ".png"
 
@@ -79,4 +80,8 @@ if __name__ == "__main__":
     parser.add_argument('--noise_length', type=int,
                         help='noise_length')
     args = parser.parse_args()
+    if TABLE.shape != 0:
+        d = TABLE.iloc[-1]
+        last_label = d["label"]
+        LABEL = int(last_label[3:12]) + 1
     add_media(args.num_masks, args.noise_length)
