@@ -1,9 +1,9 @@
-numpy
-transformers
-aiogram
-diffusers
 accelerate
-diffusers==0.10.0
-transformers scipy ftfy accelerate
+aiogram
+datasets
+diffusers
+ftfy
+numpy
+scipy
+transformers
 transformers[sentencepiece]
-transformers[sentencepiece] datasets
