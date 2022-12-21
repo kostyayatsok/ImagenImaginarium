@@ -2371,18 +2371,13 @@ adjectives = ['Abandoned', 'Abdominal', 'Abhorrent', 'Abiding', 'Abject', 'Able'
               'Yellowing', 'Yowling', 'Yellowed', 'Yobbish', 'Zany', 'Zealous', 'Zestful', 'Zippy', 'Zaftig', 'Zoftig',
               'Zenithal', 'Zeroth', 'Zigzag', 'Zoological', 'Zodiacal', 'Zonal', 'Zonary', 'Zygomorphic', 'Zillion',
               'Zoic', 'Zolaesque', 'Zygomatic', 'Zoophagous', 'Zygote', 'Zymoid', 'Zymotic', 'Zoonotic']
+all_words = [nouns, verbs, adjectives]
 
 def generate_promt():
-    ind = randint(0, len(adjectives))
-    s = adjectives[ind] + ' '
-    ind = randint(0, len(nouns))
-    s += nouns[ind] + ' '
-    ind = randint(0, len(verbs))
-    s += verbs[ind] + ' '
-    print("start" + s)
-    dct = generator_gpt(s, max_length=20, num_return_sequences=1)
-    print("gpt_2" + dct[0]['generated_text'])
-    return dct[0]['generated_text']
+    mode = randint(0, 2)
+    words = all_words[mode]
+    ind = randint(0, len(words)-1)
+    return words[ind]
 
 def generate_beu_promt(text=''):
     dct = generator(text, max_length=60, num_return_sequences=1)
