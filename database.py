@@ -53,6 +53,9 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         emb_true = image_generation.text_embedding(bea_text)
         image_true, is_nsfw = image_generation.generate_image(emb_true)
     img_path = get_picture_name(0)
+
+    if len(bea_text.split(',')[0]) > len(text):
+        text = bea_text.split(',')[0]
     add_table_row(img_path, LABEL, text, bea_text, "True")
     image_true.save(img_path)
 
