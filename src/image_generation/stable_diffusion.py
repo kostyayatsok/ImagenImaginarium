@@ -23,7 +23,6 @@ class StableDiffusion:
         self.width = 512
         self.num_inference_steps = 100
         self.guidance_scale = 7.5
-        self.generator = torch.manual_seed(32)
         self.batch_size = 1
 
         self.scheduler = LMSDiscreteScheduler.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="scheduler")
