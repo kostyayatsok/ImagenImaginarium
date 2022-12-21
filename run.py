@@ -27,9 +27,13 @@ async def GenPic(msg: types.Message):
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
     text = generate_promt()
-    print("Promt generated: " + text)
-    data = get_media("Surreal drawing " + text)
+    print("Promt generated: " + text[1])
+    data = get_media("Surreal drawing " + text[1])
     print("Media generated")
+    if len(text[1].split(',')[0]) > len(text[0]):
+        text = text[1].split(',')
+    else:
+        text = text[0]
     answ = data[1]
     await bot.send_media_group(msg.chat.id, media=data[0])
     await msg.answer(

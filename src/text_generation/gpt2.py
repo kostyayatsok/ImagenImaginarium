@@ -2388,4 +2388,4 @@ def generate_promt():
     text = gpt2_g()
     dct = generator(text, max_length=44, num_return_sequences=1)
     print()
-    return dct[0]['generated_text']
+    return [text, dct[0]['generated_text']]
