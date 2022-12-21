@@ -8,10 +8,9 @@ from src.text_editing.edit_text_latent import edit_text_latent
 from src.text_generation.gpt2 import generate_promt
 
 LABEL = 1
-PICTURE_NUMBER = 1
 IMAGES_PATH = "Images"
 DATABASE_PATH = "Database.csv"
-MAX_DATABASE_SIZE = 1000
+MAX_DATABASE_SIZE = 10
 
 if os.path.exists(DATABASE_PATH):
     TABLE = pd.read_csv(DATABASE_PATH)
@@ -20,7 +19,6 @@ else:
 
 image_generation = StableDiffusion()
 os.makedirs(IMAGES_PATH, exist_ok=True)
-
 
 
 def get_picture_name(pic):
@@ -42,8 +40,15 @@ def save():
     TABLE.to_csv(DATABASE_PATH, index=False)
 
 
+def delete(label):
+    global TABLE
+    TABLE = TABLE[TABLE.label != label]
+
+
 def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
     global LABEL
+
+    delete(LABEL)
 
     is_nsfw = True
     while is_nsfw:
@@ -61,7 +66,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
             emb = image_generation.text_embedding(new_text)
             image, is_nsfw = image_generation.generate_image(emb)
 
-        img_path = get_picture_name(i+1)
+        img_path = get_picture_name(i + 1)
         add_table_row(img_path, LABEL, new_text, False)
         image.save(img_path)
 
@@ -70,11 +75,11 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         while is_nsfw:
             emb = edit_text_latent(emb_true, noise_length)
             image, is_nsfw = image_generation.generate_image(emb)
-        
-        img_path = get_picture_name(i+1+n_bert_images)
+
+        img_path = get_picture_name(i + 1 + n_bert_images)
         add_table_row(img_path, LABEL, None, False)
         image.save(img_path)
-    
+
     if LABEL % 10 == 0:
         save()
     LABEL = (LABEL + 1) % MAX_DATABASE_SIZE
@@ -92,13 +97,23 @@ if __name__ == "__main__":
                         help='how many images generate with noise strategy')
     parser.add_argument('--n_iterations', type=int, default=1000,
                         help='how many sample to generate to do. -1 for endless generation.')
+    parser.add_argument('--images_path', type=str, default='Images',
+                        help='where images are stored')
+    parser.add_argument('--database_path', type=str, default='Database.csv',
+                        help='where database is stored')
+    parser.add_argument('--max_database_size', type=int, default=1000,
+                        help='max_number_of_rows_in_database')
 
     args = parser.parse_args()
 
+    IMAGES_PATH = args.images_path
+    DATABASE_PATH = args.database_path
+    MAX_DATABASE_SIZE = args.max_database_size
+
     if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]
-        LABEL = d["label"] + 1
-    
+        LABEL = (d["label"] + 1) % MAX_DATABASE_SIZE
+
     while args.n_iterations == -1:
         try:
             add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
@@ -110,4 +125,3 @@ if __name__ == "__main__":
             add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
         except:
             pass
-        
