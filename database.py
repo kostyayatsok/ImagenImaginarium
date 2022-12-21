@@ -10,7 +10,8 @@ from src.text_generation.gpt2 import generate_promt, generate_beu_promt
 LABEL = 1
 PICTURE_NUMBER = 1
 IMAGES_PATH = "Images"
-DATABASE_PATH = "Database.csv"
+DATABASE_NAME = "Database"
+DATABASE_PATH = DATABASE_NAME+".csv"
 MAX_DATABASE_SIZE = 1000
 
 if os.path.exists(DATABASE_PATH):
@@ -21,10 +22,8 @@ else:
 image_generation = StableDiffusion()
 os.makedirs(IMAGES_PATH, exist_ok=True)
 
-
-
 def get_picture_name(pic):
-    return f"{IMAGES_PATH}/{LABEL:05d}_{pic:02d}.png"
+    return f"{IMAGES_PATH}/{DATABASE_NAME}_{LABEL:05d}_{pic:02d}.png"
 
 
 def add_table_row(img_path, label, text, promt_text, main_picture):
@@ -98,8 +97,12 @@ if __name__ == "__main__":
                         help='how many images generate with noise strategy')
     parser.add_argument('--n_iterations', type=int, default=1000,
                         help='how many sample to generate to do. -1 for endless generation.')
+    parser.add_argument('--n_database', type=str, default="Database")
 
     args = parser.parse_args()
+
+    DATABASE_NAME = args.n_database
+    DATABASE_PATH = DATABASE_NAME + '.csv'
 
     if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]
