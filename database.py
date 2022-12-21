@@ -78,7 +78,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         add_table_row(img_path, LABEL, None, None, False)
         image.save(img_path)
     
-    if LABEL % 10 == 0:
+    if LABEL % 2 == 0:
         save()
     LABEL = (LABEL + 1) % MAX_DATABASE_SIZE
 
