@@ -10,7 +10,7 @@ from src.text_generation.gpt2 import generate_promt
 LABEL = 1
 IMAGES_PATH = "Images"
 DATABASE_PATH = "Database.csv"
-MAX_DATABASE_SIZE = 10
+MAX_DATABASE_SIZE = 1000
 
 if os.path.exists(DATABASE_PATH):
     TABLE = pd.read_csv(DATABASE_PATH)
@@ -59,29 +59,27 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
     add_table_row(img_path, LABEL, text, "True")
     image_true.save(img_path)
 
-    for i in range(n_bert_images):
+    for j in range(n_bert_images):
         is_nsfw = True
         while is_nsfw:
             new_text = edit_text_bert(text, num_masks)
             emb = image_generation.text_embedding(new_text)
             image, is_nsfw = image_generation.generate_image(emb)
 
-        img_path = get_picture_name(i + 1)
+        img_path = get_picture_name(j + 1)
         add_table_row(img_path, LABEL, new_text, False)
         image.save(img_path)
 
-    for i in range(n_noise_images):
+    for j in range(n_noise_images):
         is_nsfw = True
         while is_nsfw:
             emb = edit_text_latent(emb_true, noise_length)
             image, is_nsfw = image_generation.generate_image(emb)
 
-        img_path = get_picture_name(i + 1 + n_bert_images)
+        img_path = get_picture_name(j + 1 + n_bert_images)
         add_table_row(img_path, LABEL, None, False)
         image.save(img_path)
 
-    if LABEL % 10 == 0:
-        save()
     LABEL = (LABEL + 1) % MAX_DATABASE_SIZE
 
 
@@ -114,14 +112,24 @@ if __name__ == "__main__":
         d = TABLE.iloc[-1]
         LABEL = (d["label"] + 1) % MAX_DATABASE_SIZE
 
+    iterations_done = 0
+
     while args.n_iterations == -1:
         try:
             add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
+            iterations_done += 1
+            if iterations_done % 5 == 0:
+                save()
         except:
             pass
 
     for i in range(args.n_iterations):
         try:
             add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
+            iterations_done += 1
+            if iterations_done % 5 == 0:
+                save()
         except:
             pass
+
+    save()
