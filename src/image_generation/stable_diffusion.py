@@ -52,9 +52,7 @@ class StableDiffusion:
     def generate_image(self, text_embeddings):
         # text_embeddings = self.text_embedding(prompt)
         latents = torch.randn(
-            (self.batch_size, self.unet.in_channels, self.height // 8, self.width // 8),
-            generator=self.generator,
-        )
+            (self.batch_size, self.unet.in_channels, self.height // 8, self.width // 8))
         latents = latents.to(torch_device)
         latents = latents * self.scheduler.init_noise_sigma
 
