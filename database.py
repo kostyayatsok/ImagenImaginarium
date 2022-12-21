@@ -6,7 +6,7 @@ from src.image_generation.stable_diffusion import StableDiffusion
 from src.text_editing.bert_text_editor import edit_text_bert
 from src.text_editing.edit_text_latent import edit_text_latent
 from src.text_generation.gpt2 import generate_promt
-
+from src.text_editing.translate import translate_to_russia_with_Helsinki
 LABEL = 1
 PICTURE_NUMBER = 1
 IMAGES_PATH = "Images"
@@ -27,13 +27,14 @@ def get_picture_name(pic):
     return f"{IMAGES_PATH}/{LABEL:05d}_{pic:02d}.png"
 
 
-def add_table_row(img_path, label, text, main_picture):
+def add_table_row(img_path, label, text, ru_text, main_picture):
     global TABLE
 
     TABLE = TABLE.append(pd.DataFrame({
         "img_path": [img_path],
         "label": [label],
         "text": [text],
+        "ru_text": [ru_text],
         "main_picture": [main_picture]
     }), ignore_index=True)
 
@@ -51,7 +52,8 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         emb_true = image_generation.text_embedding(text)
         image_true, is_nsfw = image_generation.generate_image(emb_true)
     img_path = get_picture_name(0)
-    add_table_row(img_path, LABEL, text, "True")
+    ru_text = translate_to_russia_with_Helsinki(text)
+    add_table_row(img_path, LABEL, text, ru_text, "True")
     image_true.save(img_path)
 
     for i in range(n_bert_images):
@@ -62,7 +64,8 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
             image, is_nsfw = image_generation.generate_image(emb)
 
         img_path = get_picture_name(i+1)
-        add_table_row(img_path, LABEL, new_text, False)
+        ru_text = translate_to_russia_with_Helsinki(new_text)
+        add_table_row(img_path, LABEL, new_text,ru_text, False)
         image.save(img_path)
 
     for i in range(n_noise_images):
@@ -72,7 +75,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
             image, is_nsfw = image_generation.generate_image(emb)
         
         img_path = get_picture_name(i+1+n_bert_images)
-        add_table_row(img_path, LABEL, None, False)
+        add_table_row(img_path, LABEL, None, None, False)
         image.save(img_path)
     
     if LABEL % 10 == 0:
