@@ -47,14 +47,15 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
 
     is_nsfw = True
     while is_nsfw:
-        text = generate_promt()
-        bea_text = generate_beu_promt(text)
+        if st_pr == '':
+            text = generate_promt()
+        else:
+            text = st_pr
+        bea_text = generate_beu_promt(text + 'drawing')
         emb_true = image_generation.text_embedding(bea_text)
         image_true, is_nsfw = image_generation.generate_image(emb_true)
     img_path = get_picture_name(0)
 
-    if len(bea_text.split(',')[0]) > len(text):
-        text = bea_text.split(',')[0]
     add_table_row(img_path, LABEL, text, bea_text, "True")
     image_true.save(img_path)
 
@@ -98,11 +99,13 @@ if __name__ == "__main__":
     parser.add_argument('--n_iterations', type=int, default=1000,
                         help='how many sample to generate to do. -1 for endless generation.')
     parser.add_argument('--n_database', type=str, default="Database")
+    parser.add_argument('--n_start_prompt', type=str, default='')
 
     args = parser.parse_args()
 
     DATABASE_NAME = args.n_database
     DATABASE_PATH = DATABASE_NAME + '.csv'
+    st_pr = args.n_start_prompt
 
     if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]

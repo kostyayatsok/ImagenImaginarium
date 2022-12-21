@@ -2381,5 +2381,4 @@ def generate_promt():
 
 def generate_beu_promt(text=''):
     dct = generator(text, max_length=60, num_return_sequences=1)
-    print()
     return dct[0]['generated_text']
