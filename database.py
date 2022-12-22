@@ -46,6 +46,7 @@ def save():
 def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
     global LABEL
 
+    print(TABLE)
     is_nsfw = True
     while is_nsfw:
         text = st_pr
@@ -84,6 +85,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         save()
     LABEL = (LABEL + 1) % MAX_DATABASE_SIZE
 
+    print(TABLE)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
