@@ -53,7 +53,8 @@ def delete(label):
 def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
     global LABEL
 
-    delete(LABEL)
+    if TABLE.shape[0] > 0:
+        delete(LABEL)
 
     is_nsfw = True
     while is_nsfw:
