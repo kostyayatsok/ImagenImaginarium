@@ -119,8 +119,5 @@ if __name__ == "__main__":
             pass
 
     for i in range(args.n_iterations):
-        try:
-            add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
-        except:
-            pass
+        add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
         
