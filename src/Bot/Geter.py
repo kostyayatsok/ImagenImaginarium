@@ -1,9 +1,6 @@
-from aiogram import Bot, types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils import executor
-from gen_photo import *
+from aiogram import types
+from src.Bot.gen_photo import *
 import random
-import copy
 
 
 class RealGamer:

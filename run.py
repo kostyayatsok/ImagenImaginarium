@@ -1,16 +1,18 @@
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-import copy
-import re
-from config import TOKEN
-import Geter
+
+from src.Bot.config import TOKEN
+from src.Bot import Geter
+
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
+
 ff = 0
 ff2 = 0
+
 
 Game = Geter.Game()
 
@@ -132,4 +134,5 @@ async def Main(msg: types.Message):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp)
+    print("polling")
+    executor.start_polling(dp, skip_updates=True)
