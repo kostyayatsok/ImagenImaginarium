@@ -22,6 +22,7 @@ else:
 image_generation = StableDiffusion()
 os.makedirs(IMAGES_PATH, exist_ok=True)
 
+
 def get_picture_name(pic):
     return f"{IMAGES_PATH}/{DATABASE_NAME}_{LABEL:05d}_{pic:02d}.png"
 
@@ -47,11 +48,9 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
 
     is_nsfw = True
     while is_nsfw:
-        if st_pr == '':
-            text = generate_promt()
-        else:
-            text = st_pr
-        bea_text = generate_beu_promt(text + 'drawing')
+        text = st_pr
+        text = generate_promt()
+        bea_text = generate_beu_promt(text + ' drawing')
         emb_true = image_generation.text_embedding(bea_text)
         image_true, is_nsfw = image_generation.generate_image(emb_true)
     img_path = get_picture_name(0)
