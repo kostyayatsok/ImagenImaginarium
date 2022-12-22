@@ -5,8 +5,10 @@ import argparse
 from src.image_generation.stable_diffusion import StableDiffusion
 from src.text_editing.bert_text_editor import edit_text_bert
 from src.text_editing.edit_text_latent import edit_text_latent
-from src.text_generation.gpt2 import generate_promt
+from src.text_generation.gpt2 import generate_promt, generate_beu_promt
 from src.text_editing.translate import translate_to_russia_with_Helsinki
+
+
 LABEL = 1
 PICTURE_NUMBER = 1
 IMAGES_PATH = "Images"
@@ -27,7 +29,7 @@ def get_picture_name(pic):
     return f"{IMAGES_PATH}/{LABEL:05d}_{pic:02d}.png"
 
 
-def add_table_row(img_path, label, text, ru_text, main_picture):
+def add_table_row(img_path, label, text, ru_text, promt_text, main_picture):
     global TABLE
 
     TABLE = TABLE.append(pd.DataFrame({
@@ -35,6 +37,7 @@ def add_table_row(img_path, label, text, ru_text, main_picture):
         "label": [label],
         "text": [text],
         "ru_text": [ru_text],
+        "promt_text": [promt_text],
         "main_picture": [main_picture]
     }), ignore_index=True)
 
@@ -49,23 +52,25 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
     is_nsfw = True
     while is_nsfw:
         text = generate_promt()
-        emb_true = image_generation.text_embedding(text)
+        bea_text = generate_beu_promt(text)
+        emb_true = image_generation.text_embedding(bea_text)
         image_true, is_nsfw = image_generation.generate_image(emb_true)
     img_path = get_picture_name(0)
     ru_text = translate_to_russia_with_Helsinki(text)
-    add_table_row(img_path, LABEL, text, ru_text, "True")
+    add_table_row(img_path, LABEL, text, ru_text, bea_text, True)
     image_true.save(img_path)
 
     for i in range(n_bert_images):
         is_nsfw = True
         while is_nsfw:
             new_text = edit_text_bert(text, num_masks)
-            emb = image_generation.text_embedding(new_text)
+            new_bea_text = generate_beu_promt(new_text)
+            emb = image_generation.text_embedding(new_bea_text)
             image, is_nsfw = image_generation.generate_image(emb)
 
         img_path = get_picture_name(i+1)
         ru_text = translate_to_russia_with_Helsinki(new_text)
-        add_table_row(img_path, LABEL, new_text,ru_text, False)
+        add_table_row(img_path, LABEL, new_text, ru_text, new_bea_text, False)
         image.save(img_path)
 
     for i in range(n_noise_images):
@@ -78,7 +83,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         add_table_row(img_path, LABEL, None, None, False)
         image.save(img_path)
     
-    if LABEL % 10 == 0:
+    if LABEL % 2 == 0:
         save()
     LABEL = (LABEL + 1) % MAX_DATABASE_SIZE
 
