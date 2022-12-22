@@ -2,8 +2,8 @@ from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 
-from src.Bot.config import TOKEN
-from src.Bot import Geter
+from src.multi_bot.config import TOKEN
+from src.multi_bot import Geter
 
 
 bot = Bot(token=TOKEN)
