@@ -5,13 +5,13 @@ from random import randint
 generator = pipeline('text-generation', model='Gustavosta/MagicPrompt-Stable-Diffusion')
 generator_gpt = pipeline('text-generation', model='gpt2')
 
-with open('nouns.txt', 'r') as f:
+with open('src/Dictionary/nouns.txt', 'r') as f:
     nouns = f.readlines()
-with open('verbs.txt', 'r') as f:
+with open('src/Dictionary/verbs.txt', 'r') as f:
     verbs = f.readlines()
-with open('adjectives.txt', 'r') as f:
+with open('src/Dictionary/adjectives.txt', 'r') as f:
     adjectives = f.readlines()
-with open('phrases.txt', 'r') as f:
+with open('src/Dictionary/phrases.txt', 'r') as f:
     phrases = f.readlines()
 
 
