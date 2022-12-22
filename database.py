@@ -11,7 +11,8 @@ from src.text_editing.translate import translate_to_russia_with_Helsinki
 
 LABEL = 1
 IMAGES_PATH = "Images"
-DATABASE_PATH = "Database.csv"
+DATABASE_NAME = "Database"
+DATABASE_PATH = DATABASE_NAME+".csv"
 MAX_DATABASE_SIZE = 1000
 
 if os.path.exists(DATABASE_PATH):
@@ -24,7 +25,7 @@ os.makedirs(IMAGES_PATH, exist_ok=True)
 
 
 def get_picture_name(pic):
-    return f"{IMAGES_PATH}/{LABEL:05d}_{pic:02d}.png"
+    return f"{IMAGES_PATH}/{DATABASE_NAME}_{LABEL:05d}_{pic:02d}.png"
 
 
 def add_table_row(img_path, label, text, ru_text, promt_text, main_picture):
@@ -56,8 +57,9 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
 
     is_nsfw = True
     while is_nsfw:
-        text = generate_promt()
-        bea_text = generate_beu_promt(text)
+        text = st_pr
+        text += generate_promt()
+        bea_text = generate_beu_promt(text + ' (drawing)')
         emb_true = image_generation.text_embedding(bea_text)
         image_true, is_nsfw = image_generation.generate_image(emb_true)
     img_path = get_picture_name(0)
@@ -91,6 +93,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         save()
     LABEL = (LABEL + 1) % MAX_DATABASE_SIZE
 
+    print(TABLE)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
@@ -104,18 +107,23 @@ if __name__ == "__main__":
                         help='how many images generate with noise strategy')
     parser.add_argument('--n_iterations', type=int, default=1000,
                         help='how many sample to generate to do. -1 for endless generation.')
+    
     parser.add_argument('--images_path', type=str, default='Images',
                         help='where images are stored')
-    parser.add_argument('--database_path', type=str, default='Database.csv',
+    parser.add_argument('--database_name', type=str, default='Database.csv',
                         help='where database is stored')
     parser.add_argument('--max_database_size', type=int, default=1000,
                         help='max_number_of_rows_in_database')
+    parser.add_argument('--n_start_prompt', type=str, default='')
 
     args = parser.parse_args()
 
     IMAGES_PATH = args.images_path
-    DATABASE_PATH = args.database_path
+    DATABASE_NAME = args.database_name
+    DATABASE_PATH = DATABASE_NAME + '.csv'
     MAX_DATABASE_SIZE = args.max_database_size
+
+    st_pr = args.n_start_prompt
 
     if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]
@@ -127,18 +135,19 @@ if __name__ == "__main__":
         try:
             add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
             iterations_done += 1
-            if iterations_done % 5 == 0:
+            if iterations_done % 2 == 0:
                 save()
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
     for i in range(args.n_iterations):
         try:
             add_media(args.num_masks, args.noise_length, args.n_bert_images, args.n_noise_images)
             iterations_done += 1
-            if iterations_done % 5 == 0:
+            if iterations_done % 2 == 0:
                 save()
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
     save()
+    

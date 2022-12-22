@@ -1,10 +1,11 @@
 import torch
 
 from diffusers import LMSDiscreteScheduler, AutoencoderKL, UNet2DConditionModel
-from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 from PIL import Image
 from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
 from tqdm.auto import tqdm
+
+from src.image_generation.safety_checker import StableDiffusionSafetyChecker
 
 torch_device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -23,7 +24,6 @@ class StableDiffusion:
         self.width = 512
         self.num_inference_steps = 100
         self.guidance_scale = 7.5
-        self.generator = torch.manual_seed(32)
         self.batch_size = 1
 
         self.scheduler = LMSDiscreteScheduler.from_pretrained("CompVis/stable-diffusion-v1-4", subfolder="scheduler")
@@ -42,7 +42,12 @@ class StableDiffusion:
 
         max_length = text_input.input_ids.shape[-1]
         uncond_input = self.tokenizer(
-            [""] * self.batch_size, padding="max_length", max_length=max_length, return_tensors="pt"
+            ["portrait, anime, nacked, text, swollen, blurry, out of focus, slanting eyes, deformed, (asymmetrical face), "\
+             "gross proportions, photo, missing arms, bad anatomy, disfigured, (poorly drawn face), mutation, mutated, "\
+             "extra limb, (ugly), missing limb, cloned face, floating limbs,  low quality, worst quality, disconnected limbs, "\
+             "malformed hands, blur, out of focus, long neck, long body, morbid, mutilated, extra fingers, multilated hands," \
+             "poorly drawn hands, poorly drawn face, missing legs, mutated hands, too many fingers "] * self.batch_size,
+            padding="max_length", max_length=max_length, return_tensors="pt", truncation=True
         )
         with torch.no_grad():
             uncond_embeddings = self.text_encoder(uncond_input.input_ids.to(torch_device))[0]
@@ -52,9 +57,7 @@ class StableDiffusion:
     def generate_image(self, text_embeddings):
         # text_embeddings = self.text_embedding(prompt)
         latents = torch.randn(
-            (self.batch_size, self.unet.in_channels, self.height // 8, self.width // 8),
-            generator=self.generator,
-        )
+            (self.batch_size, self.unet.in_channels, self.height // 8, self.width // 8))
         latents = latents.to(torch_device)
         latents = latents * self.scheduler.init_noise_sigma
 
@@ -82,6 +85,6 @@ class StableDiffusion:
         img = pil_images[0]
 
         inputs = self.safety_processor(images=[img,], return_tensors="pt")
-        _, verdict = self.safety_checker(inputs["pixel_values"], [torch.zeros((2, 2)),])
+        verdict = self.safety_checker(inputs["pixel_values"], 0.5)
 
         return img, verdict[0]
