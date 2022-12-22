@@ -46,7 +46,7 @@ class StableDiffusion:
              "missing limb, cloned face, floating limbs, disconnected limbs, malformed hands, blur, out of focus,"\
              "long neck, long body, morbid, mutilated, extra fingers, multilated hands, poorly drawn hands, "\
              "poorly drawn face, missing legs, mutated hands, too many fingers "] * self.batch_size,
-            padding="max_length", max_length=max_length, return_tensors="pt"
+            padding="max_length", max_length=max_length, return_tensors="pt", truncation=True
         )
         with torch.no_grad():
             uncond_embeddings = self.text_encoder(uncond_input.input_ids.to(torch_device))[0]
