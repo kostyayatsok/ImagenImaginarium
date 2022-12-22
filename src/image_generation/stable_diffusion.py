@@ -42,11 +42,11 @@ class StableDiffusion:
 
         max_length = text_input.input_ids.shape[-1]
         uncond_input = self.tokenizer(
-            ["portrait, anime, nacked, text, swollen, blurry, out of focus, slanting eyes, deformed, (asymmetrical face), gross proportions,"\
-             "photo, missing arms, bad anatomy, disfigured, (poorly drawn face), mutation, mutated, extra limb, (ugly),"\
-             "missing limb, cloned face, floating limbs, disconnected limbs, malformed hands, blur, out of focus,"\
-             "long neck, long body, morbid, mutilated, extra fingers, multilated hands, poorly drawn hands, "\
-             "poorly drawn face, missing legs, mutated hands, too many fingers "] * self.batch_size,
+            ["portrait, anime, nacked, text, swollen, blurry, out of focus, slanting eyes, deformed, (asymmetrical face), "\
+             "gross proportions, photo, missing arms, bad anatomy, disfigured, (poorly drawn face), mutation, mutated, "\
+             "extra limb, (ugly), missing limb, cloned face, floating limbs,  low quality, worst quality, disconnected limbs, "\
+             "malformed hands, blur, out of focus, long neck, long body, morbid, mutilated, extra fingers, multilated hands," \
+             "poorly drawn hands, poorly drawn face, missing legs, mutated hands, too many fingers "] * self.batch_size,
             padding="max_length", max_length=max_length, return_tensors="pt", truncation=True
         )
         with torch.no_grad():
