@@ -37,6 +37,7 @@ class Game:
         self.List = list()
         self.lead = -1
         self.stage_id = -1
+        self.mode = -1
         self.all_map2 = list()
         self.id_to_map = list()
 
