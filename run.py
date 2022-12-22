@@ -1,84 +1,136 @@
 from aiogram import Bot, types
-import tracemalloc
-from src.Bot.Geter import get_media
-#from run import bot, dp
-from src.Bot.config import TOKEN
-from aiogram.utils import executor
 from aiogram.dispatcher import Dispatcher
-from src.text_generation.gpt2 import generate_promt
+from aiogram.utils import executor
 
-tracemalloc.start()
+from src.Bot.config import TOKEN
+from src.Bot import Geter
 
-fl = 0
-answ = -1
-gamers = {}
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 
-async def GenPic(msg: types.Message):
-    global answ, fl
-    fl = 0
-    await msg.reply("Сейчас ты получишь 5 картинок и должен сказать, какая была сгенерирована нейросетью изначально",
-                    reply_markup=types.ReplyKeyboardRemove())
+ff = 0
+ff2 = 0
 
+
+Game = Geter.Game()
+
+async def AddMe(msg : types.Message):
+    Game.add_RealGamer(msg.chat.id, msg.chat.first_name)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    buttons = ["1", "2", "3", "4", "5"]
+    buttons = ["Да", "Нет"]
+    if len(Game.List) <= 2:
+        buttons = ["Да"]
     keyboard.add(*buttons)
-    text = generate_promt("surreal drawings for children")
-    print("Promt generated: " + text)
-    data = get_media(text)
-    print("Media generated")
-    answ = data[1]
-    await bot.send_media_group(msg.chat.id, media=data[0])
-    await msg.answer(
-        'Картинка была сгенерирована по тексту: "' + text + '". Какой ответ?',
-        reply_markup=keyboard)
+    await msg.reply("Сейчас вас " + str(len(Game.List)) + ". Ждем еще?",
+                    reply_markup=keyboard)
 
-
-async def GetAns(msg: types.Message):
-    global answ, fl
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    buttons = ["Да!", "Хватит"]
-    keyboard.add(*buttons)
-    if msg.text == str(answ):
-        await msg.reply(
-            "Правильно! Играем еще?",
-            reply_markup=keyboard)
-    else:
-        await msg.reply(
-            "Очень жаль. Неправильно(. Играем еще?",
-            reply_markup=keyboard)
-    answ = -1
-    fl = 1
-
-
-async def Finish(msg: types.Message):
-    await msg.reply("Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
-
+async def Finish(id : int):
+    global Game
+    Game = Geter.Game()
+    await bot.send_message(id, "Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
 @dp.message_handler(commands=['start'])
 async def Start(msg: types.Message):
-    global fl
-    fl = 1
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да!", "Хватит"]
     keyboard.add(*buttons)
-    print("Bot started")
     await msg.answer(
         "Привет. Я Imagen imaginarium bot. Со мной ты можешь играть в imaginarium, где картинки будут сгенерированы нейросетью. Начинаем?",
         reply_markup=keyboard)
 
-
 @dp.message_handler()
 async def Main(msg: types.Message):
-    if fl and msg.text == "Да!":
-        await GenPic(msg)
-    elif answ != -1 and msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= 5:
-        await GetAns(msg)
-    if msg.text == "Хватит":
-        await Finish(msg)
+    global ff, ff2
+    if not msg.chat.id in Game.Gamers and msg.text == "Да!":
+        await AddMe(msg)
+        Game.fl = 2
+        return
+    if msg.text == "Да" and Game.fl == 2:
+        await msg.answer("Ну и жди", reply_markup=types.ReplyKeyboardRemove())
+    if msg.text == "Нет" and Game.fl == 2:
+        for u in Game.List:
+            await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
+        Game.start()
+        fl = 0
+
+
+    Game.go()
+
+    if Game.stage_id == 0:
+        ff = ff2 = 1
+        if msg.chat.id == Game.List[Game.lead].id and \
+                msg.text[0].isdigit() and int(msg.text[0]) >= 1 and int(msg.text[0]) <= len(Game.List[Game.lead].MedGroup.media):
+            Game.Gamers[msg.chat.id].set_imag(int(msg.text[0]), msg.text[2:])
+            await msg.answer("Так и запишем")
+
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            buttons = ["1", "2", "3", "4", "5", "6"]
+            keyboard.add(*buttons)
+
+            for u in Game.List:
+                if u.id != Game.List[Game.lead].id:
+                    await bot.send_media_group(u.id, media=Game.Gamers[u.id].MedGroup)
+                    await bot.send_message(u.id,
+                                           'Ведущий выбрал картинку. Теперь выбери картинку по ассоциации: "' + Game.List[
+                                               Game.lead].text + '"'
+                                           , reply_markup=keyboard)
+        else:
+            for u in Game.List:
+                if u.id != Game.List[Game.lead].id:
+                    await bot.send_message(u.id, "Ждем ведущего...")
+            await bot.send_media_group(Game.List[Game.lead].id, media=Game.Gamers[Game.List[Game.lead].id].MedGroup)
+            await bot.send_message(Game.List[Game.lead].id,
+                                       "Ты - ведущий. Отправь сообщение с номером картинки и комментарием к ней через пробел")
+        return
+    Game.go()
+
+    if Game.stage_id == 1:
+        if msg.chat.id != Game.List[Game.lead].id:
+            if msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= len(Game.Gamers[msg.chat.id].MedGroup.media):
+                Game.Gamers[msg.chat.id].set_imag(int(msg.text), "-")
+        else:
+            await msg.answer("Жди")
+
+    Game.go()
+
+    if Game.stage_id == 2:
+        if ff:
+            ff = 0
+            for u in Game.List:
+                await bot.send_message(u.id, "Наконец-то все что-то выбрали. Ура", reply_markup=types.ReplyKeyboardRemove())
+
+                await bot.send_media_group(u.id, media=Game.all_map())
+                if u.id != Game.List[Game.lead].id:
+                    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+                    buttons = []
+                    for i in range(len(Game.List)):
+                        buttons.append(str(i + 1))
+                    keyboard.add(*buttons)
+                    await bot.send_message(u.id, "Выбирай правильный ответ...", reply_markup=keyboard)
+        elif msg.chat.id != Game.List[Game.lead].id and msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= len(Game.List):
+            Game.Gamers[msg.chat.id].ans = int(msg.text) - 1
+    Game.go()
+
+    if Game.stage_id == 3:
+        if ff2:
+            ff2 = 0
+            for u in Game.List:
+                await bot.send_message(u.id, Game.get_leader_board(), reply_markup=types.ReplyKeyboardRemove())
+                keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+                buttons = ["Да!", "Хватит"]
+                keyboard.add(*buttons)
+                await bot.send_message(u.id, "Играем еще?", reply_markup=keyboard)
+        else:
+            if msg.text == "Хватит":
+                for u in Game.List:
+                    await Finish(u.id)
+            else:
+                for u in Game.List:
+                    await bot.send_message(u.id, "Продолжаем (напишите что-нибудь)", reply_markup=types.ReplyKeyboardRemove())
+                Game.start()
+
 
 if __name__ == '__main__':
     print("polling")
