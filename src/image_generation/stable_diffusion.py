@@ -1,10 +1,11 @@
 import torch
 
 from diffusers import LMSDiscreteScheduler, AutoencoderKL, UNet2DConditionModel
-from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 from PIL import Image
 from transformers import CLIPFeatureExtractor, CLIPTextModel, CLIPTokenizer
 from tqdm.auto import tqdm
+
+from src.image_generation.safety_checker import StableDiffusionSafetyChecker
 
 torch_device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -84,6 +85,6 @@ class StableDiffusion:
         img = pil_images[0]
 
         inputs = self.safety_processor(images=[img,], return_tensors="pt")
-        _, verdict = self.safety_checker(inputs["pixel_values"], [torch.zeros((2, 2)),])
+        verdict = self.safety_checker(inputs["pixel_values"], 0.5)
 
         return img, verdict[0]
