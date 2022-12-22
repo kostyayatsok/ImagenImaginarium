@@ -57,9 +57,8 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
 
     is_nsfw = True
     while is_nsfw:
-        text = st_pr
-        text += generate_promt()
-        bea_text = generate_beu_promt(text + ' (drawing)')
+        text = generate_promt()
+        bea_text = generate_beu_promt(st_pr + 'drawing' + text)
         emb_true = image_generation.text_embedding(bea_text)
         image_true, is_nsfw = image_generation.generate_image(emb_true)
     img_path = get_picture_name(0)
@@ -71,7 +70,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         is_nsfw = True
         while is_nsfw:
             new_text = edit_text_bert(text, num_masks)
-            new_bea_text = generate_beu_promt(new_text)
+            new_bea_text = generate_beu_promt(st_pr + 'drawing' + new_text)
             emb = image_generation.text_embedding(new_bea_text)
             image, is_nsfw = image_generation.generate_image(emb)
 
