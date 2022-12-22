@@ -2,6 +2,7 @@ import random
 from transformers import pipeline
 import numpy as np
 
+unmasker = pipeline('fill-mask', model='bert-base-uncased')
 
 def normalize(p):
     s = sum(p)
@@ -11,7 +12,6 @@ def normalize(p):
 
 
 def edit_text_bert(text, num_masks):
-    unmasker = pipeline('fill-mask', model='bert-base-uncased')
     words = text.split()
     for i in range(num_masks):
         position = random.randint(0, len(words) - 1)
