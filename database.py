@@ -67,7 +67,7 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
     add_table_row(img_path, LABEL, text, ru_text, bea_text, True)
     image_true.save(img_path)
 
-    for j in range(n_bert_images):
+    for i in range(n_bert_images):
         is_nsfw = True
         while is_nsfw:
             new_text = edit_text_bert(text, num_masks)
@@ -80,13 +80,13 @@ def add_media(num_masks, noise_length, n_bert_images, n_noise_images):
         add_table_row(img_path, LABEL, new_text, ru_text, new_bea_text, False)
         image.save(img_path)
 
-    for j in range(n_noise_images):
+    for i in range(n_noise_images):
         is_nsfw = True
         while is_nsfw:
             emb = edit_text_latent(emb_true, noise_length)
             image, is_nsfw = image_generation.generate_image(emb)
         img_path = get_picture_name(i + 1 + n_bert_images)
-        add_table_row(img_path, LABEL, None, None, False)
+        add_table_row(img_path, LABEL, None, None, None, False)
         image.save(img_path)
     
     if LABEL % 2 == 0:
