@@ -85,6 +85,6 @@ class StableDiffusion:
         img = pil_images[0]
 
         inputs = self.safety_processor(images=[img,], return_tensors="pt")
-        verdict = self.safety_checker(inputs["pixel_values"], 0.5)
+        verdict = self.safety_checker(inputs["pixel_values"], 0.01)
 
         return img, verdict[0]

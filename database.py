@@ -113,7 +113,7 @@ if __name__ == "__main__":
                         help='where database is stored')
     parser.add_argument('--max_database_size', type=int, default=1000,
                         help='max_number_of_rows_in_database')
-    parser.add_argument('--n_start_prompt', type=str, default='')
+    parser.add_argument('--start_prompt', type=str, default='')
 
     args = parser.parse_args()
 
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     DATABASE_PATH = DATABASE_NAME + '.csv'
     MAX_DATABASE_SIZE = args.max_database_size
 
-    st_pr = args.n_start_prompt
+    st_pr = args.start_prompt
 
     if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]
