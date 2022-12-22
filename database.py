@@ -124,6 +124,11 @@ if __name__ == "__main__":
 
     st_pr = args.start_prompt
 
+    if os.path.exists(DATABASE_PATH):
+        TABLE = pd.read_csv(DATABASE_PATH)
+    else:
+        TABLE = pd.DataFrame()
+
     if TABLE.shape[0] != 0:
         d = TABLE.iloc[-1]
         LABEL = (d["label"] + 1) % MAX_DATABASE_SIZE
