@@ -36,8 +36,10 @@ class Game:
         self.List = list()
         self.lead = -1
         self.stage_id = -1
+        self.fl = 0
         self.all_map2 = list()
         self.id_to_map = list()
+        self.isStart = 0
 
     def add_RealGamer(self, user_id : int, name : str):
         self.Gamers[user_id] = RealGamer(user_id, name)
@@ -49,6 +51,7 @@ class Game:
         self.stage_id = 0
         for u in self.List:
             u.upd_media()
+        self.isStart = 1
 
     def upd_score(self):
         fl2 = 1
@@ -72,6 +75,8 @@ class Game:
                     self.Gamers[self.id_to_map[u.ans]].score += 1
 
     def go(self):
+        if self.lead == -1:
+            return
         if self.List[self.lead].media_id != -1 and self.stage_id == 0:
             self.stage_id = 1
             return
@@ -112,7 +117,17 @@ class Game:
         return self.List[self.lead].id
 
     def get_leader_board(self):
-        text = "Очки:\n"
+        text = "Статистика:\n"
+        for u in self.List:
+            if u.id != self.get_lead_id():
+                text += u.name + " выбрал картинку " + str(u.ans + 1) + '\n'
+        text += '\n'
+        for u in self.List:
+            for r in range(len(self.id_to_map)):
+                if self.id_to_map[r] == u.id:
+                    text += "у " + u.name + " была карта " + str(r + 1) + '\n'
+                    break
+        text += "\nОчки:\n"
         for u in self.List:
             text += str(u.name) + ' : ' + str(u.score) + '\n'
         return text
