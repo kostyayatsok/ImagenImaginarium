@@ -24,7 +24,8 @@ os.makedirs(IMAGES_PATH, exist_ok=True)
 
 
 def get_picture_name(pic):
-    return f"{IMAGES_PATH}/{DATABASE_NAME}_{LABEL:05d}_{pic:02d}.png"
+    #return f"{IMAGES_PATH}/{DATABASE_NAME}_{LABEL:05d}_{pic:02d}.png"
+    return f"a.png"
 
 
 def add_table_row(img_path, label, text, promt_text, main_picture):
