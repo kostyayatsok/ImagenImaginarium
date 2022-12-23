@@ -48,7 +48,7 @@ class Game:
         self.ff2 = 0
         self.ff3 = 0
         self.t = 0
-        shuffle(base)
+        base = shuffle(base)
         self.base = base
 
     def add_RealGamer(self, user_id : int, name : str, mGame):

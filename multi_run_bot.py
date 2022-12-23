@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     base = pd.read_csv(args.database_name)
-    shuffle(base)
+    base = shuffle(base)
     list_Game.append(Geter.Game(base))
 
     print("polling")

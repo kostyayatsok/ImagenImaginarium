@@ -7,4 +7,4 @@ def get_photo(base, t : int):
     return base.iloc[t].img_path, t
 
 def shuffle(base):
-    base = base.sample(frac=1.)
+    return base.sample(frac=1.)
