@@ -7,34 +7,15 @@ from random import randint
 def get_media(base):
     media_r = types.MediaGroup()
 
-    number_label = base.sample(1)["label"].values[0]
-    img_paths = base[base["label"] == number_label]["img_path"].values
-    texts = base[base["label"] == number_label]["text"].values
-    main_pictures = base[base["label"] == number_label]["main_picture"].values
-    
-    cnt_pictures = min(10, len(texts))
-    
-    img_paths_that_we_will_need = []
-    str_true = ""
-    for i in range(len(main_pictures)):
-        if main_pictures[i] == True:
-            str_true = texts[i]
-            img_paths_that_we_will_need.append(img_paths[i])
-            break
+    main = base[base["main_picture"] == True].sample(1) 
+    other = base[base["main_picture"] != True].sample(4) 
 
-    ind = set()
-    while len(ind) < cnt_pictures - 1:
-        pos = randint(0, cnt_pictures - 1)
-        if pos not in ind and main_pictures[pos] == 0:
-            ind.add(pos)
+    img_paths_that_we_will_need = [main.iloc[0].img_path]
+    str_true = main.iloc[0].ru_text
     
-    ind = list(ind)
-    for i in range(len(ind)):
-        img_paths_that_we_will_need.append(img_paths[ind[i]])
-    
-    for i in range(len(img_paths_that_we_will_need)):
-        img_paths_that_we_will_need[i] = img_paths_that_we_will_need[i]
-    
+    for path in other.img_path.values:
+        img_paths_that_we_will_need.append(path)
+
     pos_who_must_replace = randint(0, len(img_paths_that_we_will_need)-1)
     img_paths_that_we_will_need[0], img_paths_that_we_will_need[pos_who_must_replace] = img_paths_that_we_will_need[pos_who_must_replace], img_paths_that_we_will_need[0]
     
