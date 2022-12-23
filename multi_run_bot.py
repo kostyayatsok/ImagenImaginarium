@@ -28,12 +28,17 @@ async def AddMe(msg : types.Message):
                     reply_markup=keyboard)
 
 async def Finish(id : int):
-    global list_Game
+    global list_Game, Gamers
     a = []
+    print(Gamers)
     for i in Gamers[id].List:
+        print(i)
         a.append(i.id)
     for i in a:
+        print(i)
+        print(Gamers[i])
         del Gamers[i]
+    print(id, list_Game)
     del list_Game[id]
     
     if len(list_Game) == 0:
