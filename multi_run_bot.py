@@ -12,11 +12,16 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 Gamers = {}
-list_Game = []
+list_keys = {}
+
 async def AddMe(msg : types.Message):
-    if len(list_Game[len(list_Game) - 1].List) == 10 or list_Game[len(list_Game) - 1].isStart:
-        list_Game.append(Geter.Game(base))
-    Game = list_Game[len(list_Game) - 1]
+    if msg.text not in list_keys:
+        list_keys[msg.text] = Geter.Game(base)
+    elif list_keys[msg.text].isStart:
+        await msg.reply("Игра с таким ключом уже началась. Используйте другой ключ.")
+        return
+ 
+    Game = list_keys[msg.text]
     Gamers[msg.chat.id] = Game
     Game.add_RealGamer(msg.chat.id, msg.chat.username, Game)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -24,27 +29,25 @@ async def AddMe(msg : types.Message):
     if len(Game.List) <= 2:
         buttons = ["Да"]
     keyboard.add(*buttons)
+    Gamers[msg.chat.id].fl = 2
     await msg.reply("Сейчас вас " + str(len(Game.List)) + ". Ждем еще?",
                     reply_markup=keyboard)
 
 async def Finish(id : int):
-    global list_Game, Gamers
+    global list_keys, Gamers
 
     cur_Game = Gamers[id]
     del Gamers[id]
     if cur_Game not in Gamers.values():
-        list_Game.remove(cur_Game)
+        list_keys.remove(cur_Game)
     
-    if len(list_Game) == 0:
-        list_Game.append(Geter.Game(base))
-
     await bot.send_message(id, "Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
 @dp.message_handler(commands=['start'])
 async def Start(msg: types.Message):
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    buttons = ["Да!", "Хватит"]
-    keyboard.add(*buttons)
+    # keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    # buttons = ["Да!", "Хватит"]
+    # keyboard.add(*buttons)
 
     if msg.chat.id in Gamers:
         if msg.chat.id in Gamers[msg.chat.id].List:
@@ -52,24 +55,28 @@ async def Start(msg: types.Message):
         del Gamers[msg.chat.id]
 
     await msg.answer(
-        "Привет. Я Imagen imaginarium bot. Со мной ты можешь играть в imaginarium, где картинки будут сгенерированы нейросетью. Начинаем?",
-        reply_markup=keyboard)
+"""
+Привет!
+Я *Imagen Imaginarium bot*.
+Со мной ты можешь играть в Imaginarium, где картинки будут сгенерированы нейросетью.
+Чтобы начать пришли мне существующий ключ комнаты или придумай свой (любая строка) и сообщи его друзьям.
+"""
+)
 
 @dp.message_handler()
 async def Main(msg: types.Message):
     f = 0
     if not msg.chat.id in Gamers:
         f = 1
-    if f and msg.text == "Да!":
+    if f:
         await AddMe(msg)
-        Gamers[msg.chat.id].fl = 2
         return
     if not msg.chat.id in Gamers:
         return
     Game = Gamers[msg.chat.id]
     print(msg.chat.id, msg.text, Game.fl, Game.List)
     if (msg.text == "Да" and Game.fl == 2) or len(Game.List) < 3:
-        await msg.answer(f"Сейчас всего ждет {len(Game.List)} игрока.", reply_markup=types.ReplyKeyboardRemove())
+        await msg.answer(f"Всего ожидающих в вашей комнате: {len(Game.List)}.\nЕсли захотите начать игру напишите мне 'Нет'.\nЧтобы узнать актуальное количество ожидающих пришлите мне любое сообщение кроме 'Нет'.", reply_markup=types.ReplyKeyboardRemove())
     if (msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text == "Да!"):
         for u in Game.List:
             await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
@@ -100,7 +107,7 @@ async def Main(msg: types.Message):
             Game.ff3 = 0
             for u in Game.List:
                 if u.id != Game.List[Game.lead].id:
-                    await bot.send_message(u.id, "Ждем ведущего... (" + Game.List[Game.lead].name + ')')
+                    await bot.send_message(u.id, "Ждем ведущего... (@" + Game.List[Game.lead].name + ')')
             await bot.send_media_group(Game.List[Game.lead].id, media=Game.Gamers[Game.List[Game.lead].id].MedGroup)
             await bot.send_message(Game.List[Game.lead].id,
                                        "Ты - ведущий. Отправь сообщение с номером картинки и комментарием к ней через пробел")
@@ -130,7 +137,8 @@ async def Main(msg: types.Message):
                     for i in range(len(Game.List)):
                         buttons.append(str(i + 1))
                     keyboard.add(*buttons)
-                    await bot.send_message(u.id, "Выбирай правильный ответ...", reply_markup=keyboard)
+                    await bot.send_message(u.id, "Угадай карточку, которую ведущий загадал как:\n"+Game.List[
+                                               Game.lead].text, reply_markup=keyboard)
         elif msg.chat.id != Game.List[Game.lead].id and msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= len(Game.List):
             Game.Gamers[msg.chat.id].ans = int(msg.text) - 1
             await msg.answer("Ок, ты выбрал картинку " + msg.text)
@@ -147,9 +155,9 @@ async def Main(msg: types.Message):
             await bot.send_message(Game.get_lead_id(), "Играем еще?", reply_markup=keyboard)
             Game.fl = 3
         elif msg.text == "Хватит":
-                for u in Game.List:
-                    await Finish(u.id)
-                Game.fl = 0
+            for u in Game.List:
+                await Finish(u.id)
+            Game.fl = 0
 
 
 if __name__ == '__main__':
@@ -162,7 +170,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     base = pd.read_csv(args.database_name)
     base = shuffle(base)
-    list_Game.append(Geter.Game(base))
 
     print("polling")
     executor.start_polling(dp, skip_updates=True)
