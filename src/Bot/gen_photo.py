@@ -5,4 +5,10 @@ base = pd.read_csv("Database.csv")
 
 t = 0
 def get_photo():
-    return base.sample(1).iloc[0].img_path
+    global base, t
+    t = (t + 1) % base.shape[0]
+    return base.iloc[t].img_path
+
+def shuffle():
+    global base
+    base = base.sample(frac=1.)

@@ -40,6 +40,7 @@ class Game:
         self.all_map2 = list()
         self.id_to_map = list()
         self.isStart = 0
+        shuffle()
 
     def add_RealGamer(self, user_id : int, name : str):
         self.Gamers[user_id] = RealGamer(user_id, name)
@@ -120,12 +121,12 @@ class Game:
         text = "Статистика:\n"
         for u in self.List:
             if u.id != self.get_lead_id():
-                text += u.name + " выбрал картинку " + str(u.ans + 1) + '\n'
+                text += '@' + u.name + " выбрал картинку " + str(u.ans + 1) + '\n'
         text += '\n'
         for u in self.List:
             for r in range(len(self.id_to_map)):
                 if self.id_to_map[r] == u.id:
-                    text += "у " + u.name + " была карта " + str(r + 1) + '\n'
+                    text += "у @" + u.name + " была карта " + str(r + 1) + '\n'
                     break
         text += "\nОчки:\n"
         for u in self.List:
