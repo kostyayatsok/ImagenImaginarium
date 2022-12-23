@@ -24,10 +24,10 @@ async def GenPic(msg: types.Message):
     await msg.reply("Сейчас ты получишь 5 картинок и должен сказать, какая была сгенерирована нейросетью изначально",
                     reply_markup=types.ReplyKeyboardRemove())
 
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(*buttons)
     media_r, answ[msg.chat.id], text, n_imgs = get_media(base)
     buttons = [str(i + 1) for i in range(n_imgs)]
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(*buttons)
     print(f"Media generated for user {msg.chat.id}")
     await bot.send_media_group(msg.chat.id, media=media_r)
     await msg.answer(
