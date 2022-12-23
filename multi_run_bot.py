@@ -30,19 +30,20 @@ async def AddMe(msg : types.Message):
 async def Finish(id : int):
     global list_Game, Gamers
     a = []
-    print(Gamers)
+    # print(Gamers)
+    cur_Game = Gamers[id]
     for i in Gamers[id].List:
-        print(i)
+        # print(i)
         a.append(i.id)
     for i in a:
-        print(i)
-        print(Gamers[i])
+        # print(i)
+        # print(Gamers[i])
         del Gamers[i]
-    print(id, list_Game)
-    del list_Game[id]
+    # print(id, list_Game)
+    list_Game.remove(cur_Game)
     
     if len(list_Game) == 0:
-        list_Game.append(base)
+        list_Game.append(Geter.Game(base))
 
     await bot.send_message(id, "Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
