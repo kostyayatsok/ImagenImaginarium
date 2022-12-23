@@ -1,6 +1,8 @@
+import argparse
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
+import pandas as pd
 
 from src.multi_bot.config import TOKEN
 from src.multi_bot import Geter
@@ -138,5 +140,14 @@ async def Main(msg: types.Message):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--images_path', type=str, default='Images',
+                        help='where images are stored')
+    parser.add_argument('--database_name', type=str, default='Database.csv',
+                        help='where database is stored')
+
+    args = parser.parse_args()
+    base = pd.read_csv(args.database_name)
+
     print("polling")
     executor.start_polling(dp, skip_updates=True)

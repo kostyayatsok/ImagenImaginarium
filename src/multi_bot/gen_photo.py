@@ -1,10 +1,7 @@
 import pandas as pd
 
 
-base = pd.read_csv("Database.csv")
-
-def get_photo(t : int):
-    global base
+def get_photo(base, t : int):
     t += 1
     t %= base.shape[0]
     return base.iloc[t].img_path, t

@@ -13,7 +13,7 @@ class RealGamer:
         self.name = my_name
         self.my_Game = mGame
         for i in range(6):
-            gp, self.my_Game.t = get_photo(self.my_Game.t)
+            gp, self.my_Game.t = get_photo(base, self.my_Game.t)
             self.MG.append(gp)
             self.MedGroup.attach_photo(types.InputFile(self.MG[i]))
         self.id = my_id
@@ -25,7 +25,7 @@ class RealGamer:
         self.media_id = k
         self.text = tx
     def upd_media(self):
-        gp, self.my_Game.t = get_photo(self.my_Game.t)
+        gp, self.my_Game.t = get_photo(base, self.my_Game.t)
         self.MG[self.media_id - 1] = gp
         self.MedGroup = types.MediaGroup()
         for i in self.MG:
