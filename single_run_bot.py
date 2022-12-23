@@ -50,6 +50,8 @@ async def GetAns(msg: types.Message):
 
 
 async def Finish(msg: types.Message):
+    global fl
+    fl = 0
     await msg.reply("Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
 
