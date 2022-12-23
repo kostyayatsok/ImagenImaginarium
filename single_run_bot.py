@@ -1,4 +1,5 @@
 import argparse
+from collections import defaultdict
 from aiogram import Bot, types
 import tracemalloc
 
@@ -8,11 +9,10 @@ from src.single_bot.config import TOKEN
 from aiogram.utils import executor
 from aiogram.dispatcher import Dispatcher
 
-tracemalloc.start()
 
-fl = 0
-answ = -1
-gamers = {}
+fl = defaultdict(int)
+answ = defaultdict(int)
+
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
@@ -20,14 +20,14 @@ dp = Dispatcher(bot)
 
 async def GenPic(msg: types.Message):
     global answ, fl
-    fl = 0
+    fl[msg.chat.id] = 0
     await msg.reply("Сейчас ты получишь 5 картинок и должен сказать, какая была сгенерирована нейросетью изначально",
                     reply_markup=types.ReplyKeyboardRemove())
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    media_r, answ, text = get_media(base)
+    media_r, answ[msg.chat.id], text = get_media(base)
     print(f"Media generated for user {msg.chat.id}")
     await bot.send_media_group(msg.chat.id, media=media_r)
     await msg.answer(
@@ -37,31 +37,35 @@ async def GenPic(msg: types.Message):
 
 async def GetAns(msg: types.Message):
     global answ, fl
+
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да!", "Хватит"]
     keyboard.add(*buttons)
-    if msg.text == str(answ):
+    if msg.text == str(answ[msg.chat.id]):
         await msg.reply(
-            f"Да, правильный ответ {answ}! Играем еще?",
+            f"Да, правильный ответ {answ[msg.chat.id]}! Играем еще?",
             reply_markup=keyboard)
     else:
         await msg.reply(
-            f"Очень жаль, но {msg.text} это неправильный ответ. Правильный ответ {answ}. Играем еще?",
+            f"Очень жаль, но {msg.text} это неправильный ответ. Правильный ответ {answ[msg.chat.id]}. Играем еще?",
             reply_markup=keyboard)
-    answ = -1
-    fl = 1
+    answ[msg.chat.id] = -1
+    fl[msg.chat.id] = 1
 
 
 async def Finish(msg: types.Message):
     global fl
-    fl = 0
+    fl[msg.chat.id] = 0
     await msg.reply("Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
 
 @dp.message_handler(commands=['start'])
 async def Start(msg: types.Message):
-    global fl
-    fl = 1
+    global fl, answ
+    
+    fl[msg.chat.id] = 1
+    answ[msg.chat.id] = -1
+    
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да!", "Хватит"]
     keyboard.add(*buttons)
@@ -73,10 +77,10 @@ async def Start(msg: types.Message):
 
 @dp.message_handler()
 async def Main(msg: types.Message):
-    if fl and msg.text == "Да!":
+    if fl[msg.chat.id] and msg.text == "Да!":
         print(f"GenPic for user {msg.chat.id}")
         await GenPic(msg)
-    elif answ != -1 and msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= 5:
+    elif answ[msg.chat.id] != -1 and msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= 5:
         print(f"GenAns for user {msg.chat.id}")
         await GetAns(msg)
     if msg.text == "Хватит":
