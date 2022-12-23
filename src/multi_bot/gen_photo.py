@@ -6,6 +6,5 @@ def get_photo(base, t : int):
     t %= base.shape[0]
     return base.iloc[t].img_path, t
 
-def shuffle():
-    global base
+def shuffle(base):
     base = base.sample(frac=1.)

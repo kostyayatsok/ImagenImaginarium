@@ -4,7 +4,7 @@ import random
 
 
 class RealGamer:
-    def __init__(self, my_id : int, my_name : str, mGame):
+    def __init__(self, my_id : int, my_name : str, mGame, base):
         self.score = 0
         self.MedGroup = types.MediaGroup()
         self.MG = list()
@@ -18,6 +18,7 @@ class RealGamer:
             self.MedGroup.attach_photo(types.InputFile(self.MG[i]))
         self.id = my_id
         self.text = "Первая картинка - правильная"
+        self.base = base
     def get_media(self): #загаданный текст и число картинки
         return [self.MedGroup[self.media_id], self.text]
     def set_imag(self, k : int, tx : str): #Изменение текста и числа
@@ -25,7 +26,7 @@ class RealGamer:
         self.media_id = k
         self.text = tx
     def upd_media(self):
-        gp, self.my_Game.t = get_photo(base, self.my_Game.t)
+        gp, self.my_Game.t = get_photo(self.base, self.my_Game.t)
         self.MG[self.media_id - 1] = gp
         self.MedGroup = types.MediaGroup()
         for i in self.MG:
@@ -34,7 +35,7 @@ class RealGamer:
         self.ans = -1
 
 class Game:
-    def __init__(self):
+    def __init__(self, base):
         self.Gamers = {}
         self.List = list()
         self.lead = -1
@@ -47,10 +48,11 @@ class Game:
         self.ff2 = 0
         self.ff3 = 0
         self.t = 0
-        shuffle()
+        shuffle(base)
+        self.base = base
 
     def add_RealGamer(self, user_id : int, name : str, mGame):
-        self.Gamers[user_id] = RealGamer(user_id, name, mGame)
+        self.Gamers[user_id] = RealGamer(user_id, name, mGame, self.base)
         self.List.append(self.Gamers[user_id])
 
     def start(self):

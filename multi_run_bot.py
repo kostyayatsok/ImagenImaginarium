@@ -10,16 +10,15 @@ from src.multi_bot.gen_photo import shuffle
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
-shuffle()
 
 Gamers = {}
-list_Game = [Geter.Game()]
+list_Game = []
 async def AddMe(msg : types.Message):
     if len(list_Game[len(list_Game) - 1].List) == 10 or list_Game[len(list_Game) - 1].isStart:
         list_Game.append(Geter.Game())
     Game = list_Game[len(list_Game) - 1]
     Gamers[msg.chat.id] = Game
-    Game.add_RealGamer(msg.chat.id, msg.chat.username, Game)
+    Game.add_RealGamer(base, msg.chat.id, msg.chat.username, Game)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да", "Нет"]
     if len(Game.List) <= 2:
@@ -30,8 +29,16 @@ async def AddMe(msg : types.Message):
 
 async def Finish(id : int):
     global list_Game
-    list_Game[0] = Geter.Game()
-    list_Game[0].isStart = 0
+    a = []
+    for i in Gamers[id].List:
+        a.append(i.id)
+    for i in a:
+        del Gamers[i]
+    del list_Game[id]
+    
+    if len(list_Game) == 0:
+        list_Game.append(base)
+
     await bot.send_message(id, "Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
 @dp.message_handler(commands=['start'])
@@ -148,6 +155,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     base = pd.read_csv(args.database_name)
+    shuffle(base)
+    list_Game.append(Geter.Game(base))
 
     print("polling")
     executor.start_polling(dp, skip_updates=True)
