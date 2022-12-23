@@ -25,9 +25,9 @@ async def GenPic(msg: types.Message):
                     reply_markup=types.ReplyKeyboardRemove())
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    media_r, answ[msg.chat.id], text = get_media(base)
+    media_r, answ[msg.chat.id], text, n_imgs = get_media(base)
+    buttons = [str(i + 1) for i in range(n_imgs)]
     print(f"Media generated for user {msg.chat.id}")
     await bot.send_media_group(msg.chat.id, media=media_r)
     await msg.answer(

@@ -23,4 +23,4 @@ def get_media(base):
     for i in range(len(img_paths_that_we_will_need)):
         media_r.attach_photo(types.InputFile(img_paths_that_we_will_need[i]))
     
-    return media_r, pos_who_must_replace + 1, str_true
+    return media_r, pos_who_must_replace + 1, str_true, len(img_paths_that_we_will_need)
