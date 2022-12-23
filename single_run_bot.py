@@ -1,5 +1,8 @@
+import argparse
 from aiogram import Bot, types
 import tracemalloc
+
+import pandas as pd
 from src.single_bot.Geter import get_media
 from src.single_bot.config import TOKEN
 from aiogram.utils import executor
@@ -24,7 +27,7 @@ async def GenPic(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["1", "2", "3", "4", "5"]
     keyboard.add(*buttons)
-    media_r, answ, text = get_media()
+    media_r, answ, text = get_media(base)
     print(f"Media generated for user {msg.chat.id}")
     await bot.send_media_group(msg.chat.id, media=media_r)
     await msg.answer(
@@ -81,5 +84,15 @@ async def Main(msg: types.Message):
         await Finish(msg)
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--images_path', type=str, default='Images',
+                        help='where images are stored')
+    parser.add_argument('--database_name', type=str, default='Database.csv',
+                        help='where database is stored')
+
+    args = parser.parse_args()
+    base = pd.read_csv(args.database_name)
+
     print("polling")
     executor.start_polling(dp, skip_updates=True)

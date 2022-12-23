@@ -3,9 +3,8 @@ import pandas as pd
 from random import randint
 
 
-base = pd.read_csv("Database.csv")
     
-def get_media():
+def get_media(base):
     media_r = types.MediaGroup()
 
     number_label = base.sample(1)["label"].values[0]
