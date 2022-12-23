@@ -12,7 +12,7 @@ from aiogram.dispatcher import Dispatcher
 
 fl = defaultdict(int)
 answ = defaultdict(int)
-
+n_of_pics = defaultdict(int)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
@@ -21,11 +21,11 @@ dp = Dispatcher(bot)
 async def GenPic(msg: types.Message):
     global answ, fl
     fl[msg.chat.id] = 0
-    await msg.reply("Сейчас ты получишь 5 картинок и должен сказать, какая была сгенерирована нейросетью изначально",
+    await msg.reply("Сейчас ты получишь картинки и должен сказать, какая была сгенерирована нейросетью изначально",
                     reply_markup=types.ReplyKeyboardRemove())
 
-    media_r, answ[msg.chat.id], text, n_imgs = get_media(base)
-    buttons = [str(i + 1) for i in range(n_imgs)]
+    media_r, answ[msg.chat.id], text, n_of_pics[msg.chat.id] = get_media(base)
+    buttons = [str(i + 1) for i in range(len(n_of_pics[msg.chat.id]))]
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*buttons)
     print(f"Media generated for user {msg.chat.id}")
@@ -80,7 +80,7 @@ async def Main(msg: types.Message):
     if fl[msg.chat.id] and msg.text == "Да!":
         print(f"GenPic for user {msg.chat.id}")
         await GenPic(msg)
-    elif answ[msg.chat.id] != -1 and msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= 5:
+    elif answ[msg.chat.id] != -1 and msg.text.isdigit() and int(msg.text) >= 1 and int(msg.text) <= n_of_pics[msg.chat.id]:
         print(f"GenAns for user {msg.chat.id}")
         await GetAns(msg)
     if msg.text == "Хватит":
