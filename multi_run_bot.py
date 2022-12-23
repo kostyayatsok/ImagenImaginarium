@@ -47,7 +47,8 @@ async def Start(msg: types.Message):
     keyboard.add(*buttons)
 
     if msg.chat.id in Gamers:
-        Gamers[msg.chat.id].List.remove(msg.chat.id)
+        if msg.chat.id in Gamers[msg.chat.id].List:
+            Gamers[msg.chat.id].List.remove(msg.chat.id)
         del Gamers[msg.chat.id]
 
     await msg.answer(
