@@ -66,8 +66,8 @@ async def Main(msg: types.Message):
         return
     if not msg.chat.id in Gamers:
         return
-    print(msg.chat.id, msg.text, Game.fl, Game.List)
     Game = Gamers[msg.chat.id]
+    print(msg.chat.id, msg.text, Game.fl, Game.List)
     if (msg.text == "Да" and Game.fl == 2) or len(Game.List) < 3:
         await msg.answer(f"Сейчас всего ждет {len(Game.List)} игрока.", reply_markup=types.ReplyKeyboardRemove())
     if (msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text == "Да!"):
