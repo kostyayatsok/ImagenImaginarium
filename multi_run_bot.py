@@ -15,7 +15,7 @@ Gamers = {}
 list_Game = []
 async def AddMe(msg : types.Message):
     if len(list_Game[len(list_Game) - 1].List) == 10 or list_Game[len(list_Game) - 1].isStart:
-        list_Game.append(Geter.Game())
+        list_Game.append(Geter.Game(base))
     Game = list_Game[len(list_Game) - 1]
     Gamers[msg.chat.id] = Game
     Game.add_RealGamer(msg.chat.id, msg.chat.username, Game)
