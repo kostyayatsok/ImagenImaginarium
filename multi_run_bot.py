@@ -29,18 +29,11 @@ async def AddMe(msg : types.Message):
 
 async def Finish(id : int):
     global list_Game, Gamers
-    a = []
-    # print(Gamers)
+
     cur_Game = Gamers[id]
-    for i in Gamers[id].List:
-        # print(i)
-        a.append(i.id)
-    for i in a:
-        # print(i)
-        # print(Gamers[i])
-        del Gamers[i]
-    # print(id, list_Game)
-    list_Game.remove(cur_Game)
+    del Gamers[id]
+    if cur_Game not in Gamers.values():
+        list_Game.remove(cur_Game)
     
     if len(list_Game) == 0:
         list_Game.append(Geter.Game(base))
@@ -69,7 +62,7 @@ async def Main(msg: types.Message):
         return
     Game = Gamers[msg.chat.id]
     if (msg.text == "Да" and Game.fl == 2) or len(Game.List) < 3:
-        await msg.answer("Жди", reply_markup=types.ReplyKeyboardRemove())
+        await msg.answer(f"Сейчас всего ждет {len(Game.List)} игрока.", reply_markup=types.ReplyKeyboardRemove())
     if (msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text == "Да!"):
         for u in Game.List:
             await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
