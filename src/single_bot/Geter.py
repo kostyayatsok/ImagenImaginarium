@@ -8,7 +8,8 @@ def get_media(base):
     media_r = types.MediaGroup()
 
     main = base[base["main_picture"] == True].sample(1) 
-    other = base[base["main_picture"] != True].sample(4) 
+    # other = base[base["main_picture"] != True].sample(4) 
+    other = base[(base["label"] == main.iloc[0].label) & (~base.main_picture)]
 
     img_paths_that_we_will_need = [main.iloc[0].img_path]
     str_true = main.iloc[0].ru_text
