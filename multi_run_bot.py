@@ -18,7 +18,7 @@ async def AddMe(msg : types.Message):
         list_Game.append(Geter.Game())
     Game = list_Game[len(list_Game) - 1]
     Gamers[msg.chat.id] = Game
-    Game.add_RealGamer(base, msg.chat.id, msg.chat.username, Game)
+    Game.add_RealGamer(msg.chat.id, msg.chat.username, Game)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да", "Нет"]
     if len(Game.List) <= 2:
