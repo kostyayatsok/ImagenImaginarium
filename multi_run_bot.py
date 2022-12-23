@@ -17,7 +17,7 @@ ff3 = 0
 
 Game = Geter.Game()
 async def AddMe(msg : types.Message):
-    Game.add_RealGamer(msg.chat.id, msg.chat.first_name)
+    Game.add_RealGamer(msg.chat.id, msg.chat.username)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да", "Нет"]
     if len(Game.List) <= 2:
@@ -50,14 +50,12 @@ async def Main(msg: types.Message):
         return
     if (msg.text == "Да" and Game.fl == 2) or len(Game.List) < 3:
         await msg.answer("Ну и жди", reply_markup=types.ReplyKeyboardRemove())
-        #Game.fl = 0
-    if (msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text != "Хватит"):
+    if (msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text == "Да!"):
         for u in Game.List:
             await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
         Game.start()
         Game.fl = 0
         ff3 = 1
-
     Game.go()
 
     if Game.stage_id == 0:
@@ -123,11 +121,11 @@ async def Main(msg: types.Message):
             ff2 = 0
             for u in Game.List:
                 await bot.send_message(u.id, Game.get_leader_board(), reply_markup=types.ReplyKeyboardRemove())
-                keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-                buttons = ["Да!", "Хватит"]
-                keyboard.add(*buttons)
-                await bot.send_message(u.id, "Играем еще?", reply_markup=keyboard)
-                Game.fl = 3
+            keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            buttons = ["Да!", "Хватит"]
+            keyboard.add(*buttons)
+            await bot.send_message(Game.get_lead_id(), "Играем еще?", reply_markup=keyboard)
+            Game.fl = 3
         elif msg.text == "Хватит":
                 for u in Game.List:
                     await Finish(u.id)
