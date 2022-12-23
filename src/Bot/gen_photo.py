@@ -3,11 +3,11 @@ import pandas as pd
 
 base = pd.read_csv("Database.csv")
 
-t = 0
-def get_photo():
-    global base, t
-    t = (t + 1) % base.shape[0]
-    return base.iloc[t].img_path
+def get_photo(t : int):
+    global base
+    t += 1
+    t %= base.shape[0]
+    return base.iloc[t].img_path, t
 
 def shuffle():
     global base

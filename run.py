@@ -4,20 +4,20 @@ from aiogram.utils import executor
 
 from src.Bot.config import TOKEN
 from src.Bot import Geter
-
+from src.Bot.gen_photo import shuffle
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
+shuffle()
 
-
-ff = 0
-ff2 = 0
-ff3 = 0
-
-
-Game = Geter.Game()
+Gamers = {}
+list_Game = [Geter.Game()]
 async def AddMe(msg : types.Message):
-    Game.add_RealGamer(msg.chat.id, msg.chat.username)
+    if len(list_Game[len(list_Game) - 1].List) == 10 or list_Game[len(list_Game) - 1].isStart:
+        list_Game.append(Geter.Game())
+    Game = list_Game[len(list_Game) - 1]
+    Gamers[msg.chat.id] = Game
+    Game.add_RealGamer(msg.chat.id, msg.chat.username, Game)
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да", "Нет"]
     if len(Game.List) <= 2:
@@ -27,9 +27,9 @@ async def AddMe(msg : types.Message):
                     reply_markup=keyboard)
 
 async def Finish(id : int):
-    global Game
-    Game = Geter.Game()
-    Game.isStart = 0
+    global list_Game
+    list_Game[0] = Geter.Game()
+    list_Game[0].isStart = 0
     await bot.send_message(id, "Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
 @dp.message_handler(commands=['start'])
@@ -43,24 +43,29 @@ async def Start(msg: types.Message):
 
 @dp.message_handler()
 async def Main(msg: types.Message):
-    global ff, ff2, ff3
-    if not msg.chat.id in Game.Gamers and msg.text == "Да!" and not Game.isStart:
+    f = 0
+    if not msg.chat.id in Gamers:
+        f = 1
+    if f and msg.text == "Да!":
         await AddMe(msg)
-        Game.fl = 2
+        Gamers[msg.chat.id].fl = 2
         return
+    if not msg.chat.id in Gamers:
+        return
+    Game = Gamers[msg.chat.id]
     if (msg.text == "Да" and Game.fl == 2) or len(Game.List) < 3:
-        await msg.answer("Ну и жди", reply_markup=types.ReplyKeyboardRemove())
+        await msg.answer("Жди", reply_markup=types.ReplyKeyboardRemove())
     if (msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text == "Да!"):
         for u in Game.List:
             await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
         Game.start()
         Game.fl = 0
-        ff3 = 1
+        Game.ff3 = 1
     Game.go()
 
     if Game.stage_id == 0:
-        ff = ff2 = 1
-        if not ff3 and msg.chat.id == Game.List[Game.lead].id and \
+        Game.ff = Game.ff2 = 1
+        if not Game.ff3 and msg.chat.id == Game.List[Game.lead].id and \
                 msg.text[0].isdigit() and int(msg.text[0]) >= 1 and int(msg.text[0]) <= len(Game.List[Game.lead].MedGroup.media):
             Game.Gamers[msg.chat.id].set_imag(int(msg.text[0]), msg.text[2:])
             await msg.answer("Так и запишем")
@@ -76,8 +81,8 @@ async def Main(msg: types.Message):
                                            'Ведущий выбрал картинку. Теперь выбери картинку по ассоциации: "' + Game.List[
                                                Game.lead].text + '"'
                                            , reply_markup=keyboard)
-        elif ff3:
-            ff3 = 0
+        elif Game.ff3:
+            Game.ff3 = 0
             for u in Game.List:
                 if u.id != Game.List[Game.lead].id:
                     await bot.send_message(u.id, "Ждем ведущего... (" + Game.List[Game.lead].name + ')')
@@ -98,8 +103,8 @@ async def Main(msg: types.Message):
     Game.go()
 
     if Game.stage_id == 2:
-        if ff:
-            ff = 0
+        if Game.ff:
+            Game.ff = 0
             for u in Game.List:
                 await bot.send_message(u.id, "Наконец-то все что-то выбрали. Ура", reply_markup=types.ReplyKeyboardRemove())
 
@@ -117,8 +122,8 @@ async def Main(msg: types.Message):
     Game.go()
 
     if Game.stage_id == 3:
-        if ff2:
-            ff2 = 0
+        if Game.ff2:
+            Game.ff2 = 0
             for u in Game.List:
                 await bot.send_message(u.id, Game.get_leader_board(), reply_markup=types.ReplyKeyboardRemove())
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
