@@ -45,6 +45,11 @@ async def Start(msg: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     buttons = ["Да!", "Хватит"]
     keyboard.add(*buttons)
+
+    if msg.chat.id in Gamers:
+        Gamers[msg.chat.id].List.erase(msg.chat.id)
+        del Gamers[msg.chat.id]
+
     await msg.answer(
         "Привет. Я Imagen imaginarium bot. Со мной ты можешь играть в imaginarium, где картинки будут сгенерированы нейросетью. Начинаем?",
         reply_markup=keyboard)
