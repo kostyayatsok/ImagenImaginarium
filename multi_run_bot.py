@@ -39,7 +39,7 @@ async def Finish(id : int):
     cur_Game = Gamers[id]
     del Gamers[id]
     if cur_Game not in Gamers.values():
-        list_keys.remove(cur_Game)
+        list_keys = {key:val for key, val in list_keys.items() if val != cur_Game}
     
     await bot.send_message(id, "Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
