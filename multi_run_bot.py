@@ -18,7 +18,7 @@ async def AddMe(msg : types.Message):
     if msg.text not in list_keys:
         list_keys[msg.text] = Geter.Game(base)
     elif list_keys[msg.text].isStart:
-        await msg.reply("Игра с таким ключом уже началась. Используйте другой ключ.")
+        await msg.reply("Игра с таким ключом уже началась. Используйте другой ключ.", reply_markup=types.ReplyKeyboardRemove())
         return
  
     Game = list_keys[msg.text]
@@ -61,7 +61,7 @@ async def Start(msg: types.Message):
 Со мной ты можешь играть в Imaginarium, где картинки будут сгенерированы нейросетью.
 Чтобы начать пришли мне существующий ключ комнаты или придумай свой (любая строка) и сообщи его друзьям.
 """
-)
+, reply_markup=types.ReplyKeyboardRemove())
 
 @dp.message_handler()
 async def Main(msg: types.Message):
@@ -77,12 +77,15 @@ async def Main(msg: types.Message):
     print(msg.chat.id, msg.text, Game.fl, Game.List)
     if (msg.text == "Да" and Game.fl == 2) or len(Game.List) < 3:
         await msg.answer(f"Всего ожидающих в вашей комнате: {len(Game.List)}.\nЕсли захотите начать игру напишите мне 'Нет'.\nЧтобы узнать актуальное количество ожидающих пришлите мне любое сообщение кроме 'Нет'.", reply_markup=types.ReplyKeyboardRemove())
-    if (msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text == "Да!"):
-        for u in Game.List:
-            await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
-        Game.start()
-        Game.fl = 0
-        Game.ff3 = 1
+    if ((msg.text == "Нет" and Game.fl == 2) or (Game.fl == 3 and msg.text == "Да!")):
+        if len(Game.List) >= 3:
+            for u in Game.List:
+                await bot.send_message(u.id, "Начинаем", reply_markup=types.ReplyKeyboardRemove())
+            Game.start()
+            Game.fl = 0
+            Game.ff3 = 1
+        else:
+            await msg.answer(f"Для начала игры нужно минимум 3 игрока. Сейчас в комнате: {len(Game.List)}.", reply_markup=types.ReplyKeyboardRemove())
     Game.go()
 
     if Game.stage_id == 0:
