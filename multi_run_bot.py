@@ -39,7 +39,7 @@ async def Finish(id : int):
     cur_Game = Gamers[id]
     del Gamers[id]
     if cur_Game not in Gamers.values():
-        list_keys = {key:val for key, val in list_keys.items() if val != cur_Game}
+        list_keys = {key: val for key, val in list_keys.items() if val != cur_Game}
     
     await bot.send_message(id, "Если захочешь поиграть еще, напиши /start", reply_markup=types.ReplyKeyboardRemove())
 
@@ -48,12 +48,14 @@ async def Start(msg: types.Message):
     # keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     # buttons = ["Да!", "Хватит"]
     # keyboard.add(*buttons)
+    if 'list_keys' in globals():
+        list_keys = {}
 
     if msg.chat.id in Gamers:
         if msg.chat.id in Gamers[msg.chat.id].List:
             Gamers[msg.chat.id].List.remove(msg.chat.id)
-        # if msg.chat.id in Gamers[msg.chat.id].Gamers:
-        #     Gamers[msg.chat.id].Gamers = {key: val for key, val in Gamers[msg.chat.id].Gamers.items() if val != msg.chat.id}
+        if msg.chat.id in Gamers[msg.chat.id].Gamers:
+            Gamers[msg.chat.id].Gamers = {key: val for key, val in Gamers[msg.chat.id].Gamers.items() if val != msg.chat.id}
         cur_Game = Gamers[msg.chat.id]
         del Gamers[msg.chat.id]
         if cur_Game not in Gamers.values():
