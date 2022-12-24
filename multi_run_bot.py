@@ -52,7 +52,10 @@ async def Start(msg: types.Message):
     if msg.chat.id in Gamers:
         if msg.chat.id in Gamers[msg.chat.id].List:
             Gamers[msg.chat.id].List.remove(msg.chat.id)
+        cur_Game = Gamers[msg.chat.id]
         del Gamers[msg.chat.id]
+        if cur_Game not in Gamers.values():
+            list_keys = {key:val for key, val in list_keys.items() if val != cur_Game}
 
     await msg.answer(
 """
